@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .heading-300 {
+    font-family: var(--typography-heading-300-fontFamily, "Lexend Deca");
+    font-size: var(--typography-heading-300-fontSize, 20px);
+    font-weight: var(--typography-heading-300-fontWeight, 600);
+    line-height: var(--typography-heading-300-lineHeight, 24px);
+    letter-spacing: var(--typography-heading-300-letterSpacing, 0);
+    font-feature-settings: "ss01" on;
+    color: var(--color-text-inverse-default, #141414);
+  }
+
+  .heading-400 {
+    font-family: var(--typography-heading-400-fontFamily);
+    font-size: var(--typography-heading-400-fontSize);
+    font-weight: var(--typography-heading-400-fontWeight);
+    line-height: var(--typography-heading-400-lineHeight);
+    letter-spacing: var(--typography-heading-400-letterSpacing);
+    font-feature-settings: "ss01" on;
+    color: var(--hs-obsidian);
+  }
+
+  .body-125 {
+    font-family: var(--typography-body-125-fontFamily);
+    font-size: var(--typography-body-125-fontSize);
+    font-weight: var(--typography-body-125-fontWeight);
+    line-height: var(--typography-body-125-lineHeight);
+    letter-spacing: var(--typography-body-125-letterSpacing);
+    font-feature-settings: "ss01" on;
+    color: var(--color-text-core-default, #141414);
+  }
+
+  .body-100 {
+    font-family: var(--typography-body-100-fontFamily);
+    font-size: var(--typography-body-100-fontSize);
+    font-weight: var(--typography-body-100-fontWeight);
+    line-height: var(--typography-body-100-lineHeight);
+    letter-spacing: var(--typography-body-100-letterSpacing);
+  }
+
+  .link-100 {
+    font-family: var(--typography-link-100-fontFamily, "Lexend Deca");
+    font-size: var(--typography-link-100-fontSize, 14px);
+    font-weight: var(--typography-link-100-fontWeight, 700);
+    line-height: var(--typography-link-100-lineHeight, 24px);
+    letter-spacing: var(--typography-link-100-letterSpacing, 0);
+    font-feature-settings: "ss01" on;
+    color: var(--color-specialty-link-on-fill-alt-default, #006162);
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-skip-ink: auto;
+  }
+
+  .form-label-required-asterisk {
+    color: var(--color-text-required-default, #ff7a59);
+  }
+
+  .text-link-underline {
+    font-family: "Lexend Deca", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-skip-ink: none;
+    color: var(--Accent-Olaf, #fff);
+  }
+}
+
+@layer base {
+  body {
+    font-family: "Lexend Deca", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none !important;
+    outline-offset: 0;
+  }
+
+  :root {
+    --typography-heading-300-fontFamily: "Lexend Deca", sans-serif;
+    --typography-heading-300-fontSize: 20px;
+    --typography-heading-300-fontWeight: 600;
+    --typography-heading-300-lineHeight: 24px;
+    --typography-heading-300-letterSpacing: 0;
+    --typography-heading-400-fontFamily: "Lexend Deca", sans-serif;
+    --typography-heading-400-fontSize: 22px;
+    --typography-heading-400-fontWeight: 500;
+    --typography-heading-400-lineHeight: 27px;
+    --typography-heading-400-letterSpacing: 0;
+    --typography-body-125-fontFamily: "Lexend Deca", sans-serif;
+    --typography-body-125-fontSize: 14px;
+    --typography-body-125-fontWeight: 600;
+    --typography-body-125-lineHeight: 24px;
+    --typography-body-125-letterSpacing: 0;
+    --typography-body-100-fontFamily: "Lexend Deca", sans-serif;
+    --typography-body-100-fontSize: 14px;
+    --typography-body-100-fontWeight: 300;
+    --typography-body-100-lineHeight: 24px;
+    --typography-body-100-letterSpacing: 0;
+    --typography-link-100-fontFamily: "Lexend Deca", sans-serif;
+    --typography-link-100-fontSize: 14px;
+    --typography-link-100-fontWeight: 700;
+    --typography-link-100-lineHeight: 24px;
+    --typography-link-100-letterSpacing: 0;
+    --color-specialty-link-on-fill-alt-default: #006162;
+    --hs-obsidian: #141414;
+    --color-text-inverse-default: #141414;
+    --color-fill-inverse-default-transparent: rgba(20, 20, 20, 0);
+    --Primary-Obsidian: #33475b;
+    --Accent-Olaf: #fff;
+    --Accent-Gypsum: #f5f8fa;
+    --Accent-Great-White: #dfe3eb;
+    --hs-great-white: #dfe3eb;
+    --color-fill-nav-section-active: #efefef;
+    --hs-lorax: #ff7a59;
+    --color-text-alert-default: #d9002b;
+    --color-border-alert-default: #d9002b;
+    --hs-calypso-medium: #7fd1de;
+    --hs-calypso-selected-bg: #e8f4f7;
+    --hs-pantera: #141414;
+    --hs-text-subtle: #6b7280;
+    --hs-caution-border: #f59e0b;
+    --hs-caution-fill: #fffbeb;
+    --color-fill-positive-subtle: #edf4ef;
+    --color-border-positive-default: #00823a;
+    --hs-radio-border: #7c98b6;
+    --hs-radio-checked: #4abacd;
+    --hs-radio-disabled-bg: #eaf0f6;
+    --hs-radio-disabled-border: #cbd6e2;
+    --color-fill-primary-default: #141414;
+    --color-border-primary-default: rgba(20, 20, 20, 0);
+    --color-fill-secondary-default: #fff;
+    --color-border-secondary-default: #8a8a8a;
+    --color-fill-primary-disabled: #f5f5f5;
+    --color-border-primary-disabled: rgba(20, 20, 20, 0);
+    --color-text-primary-disabled: #8a8a8a;
+    --borderRadius-0: 0;
+    --borderRadius-100: 4px;
+    --borderRadius-transitional-component: 4px;
+    --borderRadius-300: 8px;
+    --borderRadius-transitional-floating: 16px;
+    --color-border-container-default: #ccc;
+    --color-fill-surface-default: #fff;
+    --color-text-core-default: #141414;
+    --color-text-required-default: #ff7a59;
+    --color-fill-field-default: #fff;
+    --color-fill-field-pressed: #e6e6e6;
+    --color-border-interactive-pressed: #141414;
+    --color-focus: #00a4bd;
+    --color-border-tertiary-disabled: #e6e6e6;
+    --color-border-core-default: #8a8a8a;
+    --color-border-field-default: #8a8a8a;
+    --color-fill-field-default-alt: #ffffff;
+    --color-icon-interactive-default: #141414;
+    --color-fill-transitional-modal-gradient-color-1: #fff;
+    --color-fill-transitional-modal-gradient-color-2: #fff;
+    --Modal-Gradient: linear-gradient(86deg, var(--color-fill-transitional-modal-gradient-color-1) -3.28%, var(--color-fill-transitional-modal-gradient-color-2) 97.8%);
+    --space-0: 0;
+    --space-25: 1px;
+    --space-50: 2px;
+    --space-100: 4px;
+    --space-200: 8px;
+    --space-250: 10px;
+    --space-300: 12px;
+    --space-400: 16px;
+    --space-500: 20px;
+    --space-600: 24px;
+    --space-700: 28px;
+    --space-800: 32px;
+    --space-900: 36px;
+    --space-1000: 40px;
+    --space-1100: 48px;
+    --space-1200: 56px;
+    --space-1300: 60px;
+    --space-1400: 64px;
+    --space-1500: 96px;
+    --space-1600: 144px;
+    --space-1700: 192px;
+  }
+}

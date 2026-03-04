@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cd design-system/app && npm run build",
+  "installCommand": "cd design-system && npm install && cd app && npm install",
+  "outputDirectory": "design-system/app/dist",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

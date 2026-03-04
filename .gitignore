@@ -1,0 +1,38 @@
+# Vercel (link to specific account - do not commit)
+.vercel/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test / Coverage
+coverage/
+
+# Nested git repos (single repo at HubSpot level)
+HSP-Onboarding/.git
+HSP-Onboarding/.git.bak
+
+# Temp files
+git_status.txt
+.vercel
