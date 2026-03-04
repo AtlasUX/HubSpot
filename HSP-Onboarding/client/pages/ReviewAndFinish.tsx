@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { COUNTRY_OPTIONS } from "@shared/countries";
 import {
   OnboardingHeader,
   Div,
@@ -42,6 +43,7 @@ export default function ReviewAndFinish() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const {
     resetOnboarding,
+    country,
     selectedBusinessType,
     businessStructure,
     hasConfirmedBusinessType: _hasConfirmedBusinessType,
@@ -192,8 +194,13 @@ export default function ReviewAndFinish() {
                 <div className="flex flex-col items-start gap-[var(--space-800)] w-full">
                   <ReviewCard
                     label="General information"
-                    onEditClick={() => {}}
-                  />
+                    onEditClick={() => navigate("/general-information")}
+                  >
+                    <ReviewCardField
+                      label="Where is your company located"
+                      value={country ? (COUNTRY_OPTIONS.find((c) => c.value === country)?.label ?? country) : "—"}
+                    />
+                  </ReviewCard>
 
                   <ReviewCard label="Business type" variant="muted">
                     <p className="body-100 text-hs-obsidian [font-feature-settings:'ss01'_on] w-full">
