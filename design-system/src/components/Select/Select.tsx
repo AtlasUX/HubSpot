@@ -51,7 +51,7 @@ const fieldDefault =
 const fieldActive =
   "border border-[var(--color-focus)] bg-[var(--color-fill-field-default)]";
 const fieldDisabled =
-  "border border-[var(--color-border-tertiary-disabled)] bg-[var(--color-fill-field-default)]";
+  "border border-[var(--color-border-tertiary-disabled)] bg-[var(--color-fill-primary-disabled)] cursor-not-allowed";
 const valueTypography =
   "body-100 text-[var(--color-text-core-default)] overflow-hidden text-ellipsis [font-feature-settings:'ss01'_on]";
 
@@ -151,17 +151,17 @@ export function Select({
         aria-expanded={open}
         aria-label={label}
       >
-        <span className={`flex items-center gap-2 min-w-0 flex-1 justify-start ${valueTypography}`}>
+        <span className={`flex items-center gap-2 min-w-0 flex-1 justify-start ${valueTypography} ${disabled ? "text-[var(--color-text-primary-disabled)]" : ""}`}>
           {showFlags && selectedOption?.countryCode && (
             <span className="shrink-0 text-lg leading-none">
               {countryCodeToFlag(selectedOption.countryCode)}
             </span>
           )}
-          <span className={`truncate ${!value ? "text-hs-text-subtle" : ""}`}>
+          <span className={`truncate ${!value && !disabled ? "text-hs-text-subtle" : ""}`}>
             {displayLabel}
           </span>
         </span>
-        <span className="shrink-0 ml-2 text-[var(--color-text-core-default)]">
+        <span className={`shrink-0 ml-2 ${disabled ? "text-[var(--color-text-primary-disabled)] opacity-60" : "text-[var(--color-text-core-default)]"}`}>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
             <path
               d="M3 3l3 3 3-3"
