@@ -137,7 +137,7 @@ export default function BusinessAddressAndSupport() {
                     onBlur={() => setFocusedField(null)}
                   />
 
-                  <div className="flex flex-col items-start gap-[var(--space-100)] w-full">
+                  <div className="flex flex-col items-start gap-[var(--space-200)] w-full">
                     <FormLabel as="p" required fullWidth>
                       Registered business address
                     </FormLabel>
@@ -301,7 +301,7 @@ Customers will see this on sales receipts and other documents.`}
                   />
                 )}
                 <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <div className="flex flex-col items-start gap-[var(--space-100)] w-full">
+                  <div className="flex flex-col items-start gap-[var(--space-200)] w-full">
                     <FormLabel as="p" required fullWidth>
                       Registered business address
                     </FormLabel>
