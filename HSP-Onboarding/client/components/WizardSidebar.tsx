@@ -42,13 +42,13 @@ function buildNavItems(
     },
     {
       type: "substep",
-      label: "Business information",
+      label: "Business industry",
       current: isOnBusinessInfo,
       path: "/business-information",
     },
     {
       type: "substep",
-      label: "Business address & support",
+      label: "Business details",
       current: isOnBusinessAddress,
       path: "/business-address-and-support",
     },

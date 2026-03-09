@@ -90,7 +90,7 @@ export default function BusinessType() {
               <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl">
                 <div className="flex flex-col items-start gap-4 w-full">
                   <h1 className="heading-400">
-                    Select your business type
+                    Select your business type: test
                   </h1>
                   <Div />
                   {hasConfirmedBusinessType ? (

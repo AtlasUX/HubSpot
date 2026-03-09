@@ -1,20 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { OnboardingHeader, Select, Div, TextField, PhoneNumber, OnboardingTooltip } from "design-system/components";
+import { OnboardingHeader, Select, Div, TextField, OnboardingTooltip } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import WizardSidebar from "@/components/WizardSidebar";
 import WizardFooter from "@/components/WizardFooter";
 
-type FocusedField =
-  | "legal-business-name"
-  | "doing-business-as"
-  | "industry"
-  | "products-services"
-  | "business-phone"
-  | null;
+type FocusedField = "industry" | "products-services" | null;
 
 const INDUSTRY_OPTIONS = [
   { value: "computers", label: "Computers and Computer Peripheral Equipment and Software" },
+  {
+    value: "programming",
+    label: "Computer Programming, Data Processing, and Integrated Systems Design Services",
+  },
   { value: "retail", label: "Retail" },
   { value: "services", label: "Professional Services" },
   { value: "consulting", label: "Consulting" },
@@ -24,20 +22,8 @@ const INDUSTRY_OPTIONS = [
 export default function BusinessInformation() {
   const navigate = useNavigate();
   const [focusedField, setFocusedField] = useState<FocusedField>(null);
-  const {
-    legalBusinessName,
-    setLegalBusinessName,
-    doingBusinessAs,
-    setDoingBusinessAs,
-    industry,
-    setIndustry,
-    productsOrServices,
-    setProductsOrServices,
-    businessPhone,
-    setBusinessPhone,
-    businessPhoneCountryCode,
-    setBusinessPhoneCountryCode,
-  } = useOnboarding();
+  const { industry, setIndustry, productsOrServices, setProductsOrServices } =
+    useOnboarding();
 
   const handleBack = () => {
     navigate("/business-type");
@@ -48,10 +34,7 @@ export default function BusinessInformation() {
   };
 
   const isValid =
-    legalBusinessName.trim().length > 0 &&
-    industry.length > 0 &&
-    productsOrServices.trim().length >= 10 &&
-    businessPhone.trim().length > 0;
+    industry.length > 0 && productsOrServices.trim().length >= 10;
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -66,7 +49,7 @@ export default function BusinessInformation() {
               <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl">
                 <div className="flex flex-col items-start gap-4 w-full">
                   <h1 className="heading-400">
-                    Edit business information
+                    Business industry
                   </h1>
                   <p className="body-100 text-hs-obsidian">
                     We collect this information to comply with financial and legal obligations.
@@ -75,23 +58,6 @@ export default function BusinessInformation() {
                 </div>
 
                 <div className="flex flex-col items-start gap-6 w-full max-w-md">
-                  <TextField
-                    label="Legal business name"
-                    value={legalBusinessName}
-                    onChange={setLegalBusinessName}
-                    required
-                    onFocus={() => setFocusedField("legal-business-name")}
-                    onBlur={() => setFocusedField(null)}
-                  />
-
-                  <TextField
-                    label="Doing business as"
-                    value={doingBusinessAs}
-                    onChange={setDoingBusinessAs}
-                    onFocus={() => setFocusedField("doing-business-as")}
-                    onBlur={() => setFocusedField(null)}
-                  />
-
                   <Select
                     label="Industry"
                     placeholder="Select your industry"
@@ -115,20 +81,6 @@ export default function BusinessInformation() {
                     onFocus={() => setFocusedField("products-services")}
                     onBlur={() => setFocusedField(null)}
                   />
-
-                  <PhoneNumber
-                    label="Business phone number"
-                    countryCode={businessPhoneCountryCode}
-                    value={businessPhone}
-                    placeholder="(222) 232-3345"
-                    onChange={(code, number) => {
-                      setBusinessPhoneCountryCode(code);
-                      setBusinessPhone(number);
-                    }}
-                    required
-                    onFocus={() => setFocusedField("business-phone")}
-                    onBlur={() => setFocusedField(null)}
-                  />
                 </div>
               </div>
             </div>
@@ -141,33 +93,13 @@ export default function BusinessInformation() {
             {/* Spacers to align tooltip with focused field */}
             <div className="flex flex-col items-start gap-[var(--space-800)] w-full">
               <div className="flex flex-col items-start gap-4 w-full invisible pointer-events-none select-none" aria-hidden>
-                <h1 className="heading-400">Edit business information</h1>
+                <h1 className="heading-400">Business industry</h1>
                 <p className="body-100 text-hs-obsidian">
                   We collect this information to comply with financial and legal obligations.
                 </p>
                 <Div />
               </div>
               <div className="flex flex-col items-start gap-6 w-full">
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <TextField label="Legal business name" value="" onChange={() => {}} disabled />
-                </div>
-                {focusedField === "legal-business-name" && (
-                  <OnboardingTooltip
-                    title="Legal business name"
-                    description="Customers will see this on sales receipts and other documents."
-                    className="-mt-20"
-                  />
-                )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <TextField label="Doing business as" value="" onChange={() => {}} disabled />
-                </div>
-                {focusedField === "doing-business-as" && (
-                  <OnboardingTooltip
-                    title="Doing business as (DBA)"
-                    description="The operating name of your company, if it's different than the legal name."
-                    className="-mt-20"
-                  />
-                )}
                 <div className="invisible pointer-events-none select-none" aria-hidden>
                   <Select label="Industry" value="" options={INDUSTRY_OPTIONS} onChange={() => {}} disabled />
                 </div>
@@ -191,16 +123,6 @@ export default function BusinessInformation() {
                   <OnboardingTooltip
                     title="Products or services"
                     description="No need for a detailed list. We just need a general idea of what you plan to sell."
-                    className="-mt-20"
-                  />
-                )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <PhoneNumber value="" countryCode="US" onChange={() => {}} disabled />
-                </div>
-                {focusedField === "business-phone" && (
-                  <OnboardingTooltip
-                    title="Business phone number"
-                    description="A phone number where we can reach your business. This may be used for verification."
                     className="-mt-20"
                   />
                 )}

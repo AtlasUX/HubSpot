@@ -54,10 +54,12 @@ export default function ReviewAndFinish() {
     businessPhone,
     businessPhoneCountryCode,
     businessAddressStreet,
+    businessAddressStreetLine2,
     businessAddressCity,
     businessAddressState,
     businessAddressZip,
     businessWebsite,
+    contactEmail,
     supportEmail,
     supportPhone,
     supportPhoneCountryCode,
@@ -115,16 +117,24 @@ export default function ReviewAndFinish() {
     ? INDUSTRY_OPTIONS.find((o) => o.value === industry)?.label ?? industry
     : "";
 
-  const displayPhone =
-    businessPhone
-      ? (businessPhoneCountryCode === "US" ? `+1 ${businessPhone}` : `+${businessPhoneCountryCode} ${businessPhone}`)
-      : "";
-
   const displayAddress =
-    businessAddressStreet || businessAddressCity || businessAddressState || businessAddressZip
-      ? [businessAddressStreet, `${[businessAddressCity, businessAddressState].filter(Boolean).join(", ")} ${businessAddressZip}`.trim()]
+    businessAddressStreet ||
+    businessAddressStreetLine2 ||
+    businessAddressCity ||
+    businessAddressState ||
+    businessAddressZip
+      ? [
+          businessAddressStreet,
+          businessAddressStreetLine2,
+          `${[businessAddressCity, businessAddressState].filter(Boolean).join(", ")} ${businessAddressZip}`.trim(),
+        ]
           .filter(Boolean)
           .join("\n")
+      : "";
+
+  const displayBusinessPhone =
+    businessPhone
+      ? (businessPhoneCountryCode === "US" ? `+1 ${businessPhone}` : `+${businessPhoneCountryCode} ${businessPhone}`)
       : "";
 
   const displaySupportPhone =
@@ -227,7 +237,7 @@ export default function ReviewAndFinish() {
                   </ReviewCard>
 
                   <ReviewCard
-                    label="Business information"
+                    label="Business industry"
                     onEditClick={() => navigate("/business-information")}
                   >
                     <ReviewCardField
@@ -243,14 +253,10 @@ export default function ReviewAndFinish() {
                       label="What products or services will you collect payments for?"
                       value={productsOrServices}
                     />
-                    <ReviewCardField
-                      label="Business phone number"
-                      value={displayPhone}
-                    />
                   </ReviewCard>
 
                   <ReviewCard
-                    label="Business address and support information"
+                    label="Business details"
                     onEditClick={() => navigate("/business-address-and-support")}
                   >
                     <ReviewCardField
@@ -262,7 +268,12 @@ export default function ReviewAndFinish() {
                       label="Business website URL"
                       value={businessWebsite}
                     />
+                    <ReviewCardField label="Business email" value={contactEmail} />
                     <ReviewCardField label="Support email" value={supportEmail} />
+                    <ReviewCardField
+                      label="Business phone number"
+                      value={displayBusinessPhone}
+                    />
                     <ReviewCardField
                       label="Support phone number"
                       value={displaySupportPhone}

@@ -30,10 +30,12 @@ export interface OnboardingState {
   businessPhone: string;
   businessPhoneCountryCode: string;
   businessAddressStreet: string;
+  businessAddressStreetLine2: string;
   businessAddressCity: string;
   businessAddressState: string;
   businessAddressZip: string;
   businessWebsite: string;
+  contactEmail: string;
   supportEmail: string;
   supportPhone: string;
   supportPhoneCountryCode: string;
@@ -106,10 +108,12 @@ interface OnboardingContextValue extends OnboardingState {
   setBusinessPhone: (v: string) => void;
   setBusinessPhoneCountryCode: (v: string) => void;
   setBusinessAddressStreet: (v: string) => void;
+  setBusinessAddressStreetLine2: (v: string) => void;
   setBusinessAddressCity: (v: string) => void;
   setBusinessAddressState: (v: string) => void;
   setBusinessAddressZip: (v: string) => void;
   setBusinessWebsite: (v: string) => void;
+  setContactEmail: (v: string) => void;
   setSupportEmail: (v: string) => void;
   setSupportPhone: (v: string) => void;
   setSupportPhoneCountryCode: (v: string) => void;
@@ -163,10 +167,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [businessPhone, setBusinessPhone] = useState("");
   const [businessPhoneCountryCode, setBusinessPhoneCountryCode] = useState("US");
   const [businessAddressStreet, setBusinessAddressStreet] = useState("");
+  const [businessAddressStreetLine2, setBusinessAddressStreetLine2] = useState("");
   const [businessAddressCity, setBusinessAddressCity] = useState("");
   const [businessAddressState, setBusinessAddressState] = useState("");
   const [businessAddressZip, setBusinessAddressZip] = useState("");
   const [businessWebsite, setBusinessWebsite] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
   const [supportEmail, setSupportEmail] = useState("");
   const [supportPhone, setSupportPhone] = useState("");
   const [supportPhoneCountryCode, setSupportPhoneCountryCode] = useState("US");
@@ -215,10 +221,12 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setBusinessPhone("");
     setBusinessPhoneCountryCode("US");
     setBusinessAddressStreet("");
+    setBusinessAddressStreetLine2("");
     setBusinessAddressCity("");
     setBusinessAddressState("");
     setBusinessAddressZip("");
     setBusinessWebsite("");
+    setContactEmail("");
     setSupportEmail("");
     setSupportPhone("");
     setSupportPhoneCountryCode("US");
@@ -283,6 +291,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setBusinessPhoneCountryCode,
         businessAddressStreet,
         setBusinessAddressStreet,
+        businessAddressStreetLine2,
+        setBusinessAddressStreetLine2,
         businessAddressCity,
         setBusinessAddressCity,
         businessAddressState,
@@ -291,6 +301,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setBusinessAddressZip,
         businessWebsite,
         setBusinessWebsite,
+        contactEmail,
+        setContactEmail,
         supportEmail,
         setSupportEmail,
         supportPhone,
