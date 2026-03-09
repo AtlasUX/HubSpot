@@ -280,7 +280,7 @@ Customers will see this on sales receipts and other documents.`}
                 </div>
                 {focusedField === "doing-business-as" && (
                   <OnboardingTooltip
-                    title="Doing business as"
+                    title="Doing business as (DBA)"
                     description="The operating name of your company, if it's different than the legal name."
                     className="-mt-20"
                   />
@@ -361,7 +361,7 @@ Customers will see this on sales receipts and other documents.`}
                 {focusedField === "business-website" && (
                   <OnboardingTooltip
                     title="Business website URL"
-                    description="Your company's website that customers can visit."
+                    description="No website? You can share an app store link, a business social media profile, or add a product description instead."
                     className="-mt-20"
                   />
                 )}
@@ -381,7 +381,9 @@ Customers will see this on sales receipts and other documents.`}
                 {focusedField === "support-email" && (
                   <OnboardingTooltip
                     title="Support email"
-                    description="Email address where customers can reach your support team."
+                    description={`This email address is editable anytime in your payment settings.
+
+This will be visible to your customers to help them contact your business with questions about payments.`}
                     className="-mt-20"
                   />
                 )}
@@ -401,7 +403,9 @@ Customers will see this on sales receipts and other documents.`}
                 {focusedField === "support-phone" && (
                   <OnboardingTooltip
                     title="Support phone number"
-                    description="Phone number where customers can reach your support team."
+                    description={`This phone number is editable anytime in your payment settings.
+
+This will be visible to your customers to help them contact your business with questions about payments.`}
                     className="-mt-20"
                   />
                 )}
