@@ -6,6 +6,7 @@ import GeneralInformation from "./pages/GeneralInformation";
 import BusinessType from "./pages/BusinessType";
 import BusinessInformation from "./pages/BusinessInformation";
 import BusinessAddressAndSupport from "./pages/BusinessAddressAndSupport";
+import BusinessDetailsOp2 from "./pages/BusinessDetailsOp2";
 import BusinessFinancials from "./pages/BusinessFinancials";
 import BusinessRepresentative from "./pages/BusinessRepresentative";
 import Owners from "./pages/Owners";
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/business-type" element={<BusinessType />} />
         <Route path="/business-information" element={<BusinessInformation />} />
         <Route path="/business-address-and-support" element={<BusinessAddressAndSupport />} />
+        <Route path="/business-details-op2" element={<BusinessDetailsOp2 />} />
         <Route path="/business-financials" element={<BusinessFinancials />} />
         <Route path="/business-representative" element={<BusinessRepresentative />} />
         <Route path="/owners" element={<Owners />} />

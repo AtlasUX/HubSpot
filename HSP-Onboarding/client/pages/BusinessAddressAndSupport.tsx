@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   OnboardingHeader,
   Div,
@@ -97,18 +97,29 @@ export default function BusinessAddressAndSupport() {
             <WizardSidebar currentStep="business-address-and-support" />
 
             <div className="flex-1 flex flex-col min-h-0 pl-[20px] pb-[var(--space-1400)]">
-              <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl">
+              <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl w-full">
                 <div className="flex flex-col items-start gap-4 w-full">
                   <h1 className="heading-400">
                     Business details
                   </h1>
                   <p className="body-100 text-hs-obsidian [font-feature-settings:'ss01'_on]">
-                    The combination of your company's legal business name and Employer Identification Number (EIN) must exactly match the one listed on your IRS documents (e.g., Letter 147C or SS-4 Confirmation letter), including capitalization, symbols, and punctuation.
+                    Make sure your legal business name and EIN match your IRS documents exactly, including capitalization and punctuation. (e.g., Letter 147C or SS-4 Confirmation letter)
                   </p>
+                  <a
+                    href="/business-details-op2"
+                    className="link-100 text-[var(--color-text-link-default)] hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate("/business-details-op2");
+                    }}
+                  >
+                    Try option 2 layout (grouped card)
+                  </a>
                   <Div />
                 </div>
 
                 <div className="flex flex-col items-start gap-6 w-full max-w-md">
+                  {/* Option 1: Flat layout – no cards, same as Business industry page */}
                   <TextField
                     label="Legal business name"
                     value={legalBusinessName}
@@ -256,7 +267,7 @@ export default function BusinessAddressAndSupport() {
               <div className="flex flex-col items-start gap-4 w-full invisible pointer-events-none select-none" aria-hidden>
                 <h1 className="heading-400">Business details</h1>
                 <p className="body-100 text-hs-obsidian [font-feature-settings:'ss01'_on]">
-                  The combination of your company's legal business name and Employer Identification Number (EIN) must exactly match the one listed on your IRS documents (e.g., Letter 147C or SS-4 Confirmation letter), including capitalization, symbols, and punctuation.
+                  Make sure your legal business name and EIN match your IRS documents exactly, including capitalization and punctuation. (e.g., Letter 147C or SS-4 Confirmation letter)
                 </p>
                 <Div />
               </div>
@@ -267,9 +278,7 @@ export default function BusinessAddressAndSupport() {
                 {focusedField === "legal-business-name" && (
                   <OnboardingTooltip
                     title="Legal business name"
-                    description={`Your legal business name must match the one listed on your IRS documents exactly (e.g. Letter 147C or SS-4 confirmation letter), including capitalization, symbols and punctuation.
-
-
+                    description={`Make sure your legal business name matches your IRS documents exactly, including capitalization, symbols, and punctuation (e.g., Letter 147C or SS-4 Confirmation letter).
 
 Customers will see this on sales receipts and other documents.`}
                     className="-mt-20"
@@ -320,8 +329,8 @@ Customers will see this on sales receipts and other documents.`}
                 </div>
                 {focusedField === "address-line-2" && (
                   <OnboardingTooltip
-                    title="Address line 2"
-                    description="Apartment, suite, or other details if applicable."
+                    title="Registered business address"
+                    description="The legal address of your business as registered with authorities."
                     className="-mt-20"
                   />
                 )}
@@ -330,8 +339,8 @@ Customers will see this on sales receipts and other documents.`}
                 </div>
                 {focusedField === "city" && (
                   <OnboardingTooltip
-                    title="City"
-                    description="The city where your business is located."
+                    title="Registered business address"
+                    description="The legal address of your business as registered with authorities."
                     className="-mt-20"
                   />
                 )}
@@ -340,8 +349,8 @@ Customers will see this on sales receipts and other documents.`}
                 </div>
                 {focusedField === "state" && (
                   <OnboardingTooltip
-                    title="State"
-                    description="The state or province where your business is located."
+                    title="Registered business address"
+                    description="The legal address of your business as registered with authorities."
                     className="-mt-20"
                   />
                 )}
@@ -350,13 +359,17 @@ Customers will see this on sales receipts and other documents.`}
                 </div>
                 {focusedField === "zip" && (
                   <OnboardingTooltip
-                    title="Zip code"
-                    description="Postal code for your business address."
+                    title="Registered business address"
+                    description="The legal address of your business as registered with authorities."
                     className="-mt-20"
                   />
                 )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <TextField label="Business website URL" value="" onChange={() => {}} disabled />
+                <div className="invisible pointer-events-none select-none flex flex-col items-stretch w-full rounded-[var(--borderRadius-100)] p-[var(--space-600)] border border-[var(--Accent-Great-White,#DFE3EB)]" aria-hidden>
+                  <div className="flex flex-col items-start gap-6 w-full">
+                    <TextField label="Business website URL" value="" onChange={() => {}} disabled />
+                    <TextField label="Business email" value="" onChange={() => {}} disabled />
+                    <PhoneNumber label="Business phone number" value="" countryCode="US" onChange={() => {}} disabled />
+                  </div>
                 </div>
                 {focusedField === "business-website" && (
                   <OnboardingTooltip
@@ -365,9 +378,6 @@ Customers will see this on sales receipts and other documents.`}
                     className="-mt-20"
                   />
                 )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <TextField label="Business email" value="" onChange={() => {}} disabled />
-                </div>
                 {focusedField === "contact-email" && (
                   <OnboardingTooltip
                     title="Business email"
@@ -375,8 +385,18 @@ Customers will see this on sales receipts and other documents.`}
                     className="-mt-20"
                   />
                 )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <TextField label="Support email" value="" onChange={() => {}} disabled />
+                {focusedField === "business-phone" && (
+                  <OnboardingTooltip
+                    title="Business phone number"
+                    description="A phone number where we can reach your business."
+                    className="-mt-20"
+                  />
+                )}
+                <div className="invisible pointer-events-none select-none flex flex-col items-stretch w-full rounded-[var(--borderRadius-100)] p-[var(--space-600)] border border-[var(--Accent-Great-White,#DFE3EB)]" aria-hidden>
+                  <div className="flex flex-col items-start gap-6 w-full">
+                    <TextField label="Support email" value="" onChange={() => {}} disabled />
+                    <PhoneNumber value="" countryCode="US" onChange={() => {}} disabled />
+                  </div>
                 </div>
                 {focusedField === "support-email" && (
                   <OnboardingTooltip
@@ -387,19 +407,6 @@ This will be visible to your customers to help them contact your business with q
                     className="-mt-20"
                   />
                 )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <PhoneNumber label="Business phone number" value="" countryCode="US" onChange={() => {}} disabled />
-                </div>
-                {focusedField === "business-phone" && (
-                  <OnboardingTooltip
-                    title="Business phone number"
-                    description="A phone number where we can reach your business."
-                    className="-mt-20"
-                  />
-                )}
-                <div className="invisible pointer-events-none select-none" aria-hidden>
-                  <PhoneNumber value="" countryCode="US" onChange={() => {}} disabled />
-                </div>
                 {focusedField === "support-phone" && (
                   <OnboardingTooltip
                     title="Support phone number"
