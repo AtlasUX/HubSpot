@@ -9,5 +9,7 @@
       "path": "design-system"
     }
   ],
-  "settings": {}
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "HSP-Onboarding"
+  }
 }
