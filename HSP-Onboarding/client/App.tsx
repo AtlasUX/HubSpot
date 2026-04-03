@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 const Gallery = lazy(() => import("design-system/gallery").then((m) => ({ default: m.Gallery })));
 import { OnboardingProvider } from "@/contexts/OnboardingContext";
 import GeneralInformation from "./pages/GeneralInformation";
+import ApplicationDashboard from "./pages/ApplicationDashboard";
 import BusinessType from "./pages/BusinessType";
 import BusinessInformation from "./pages/BusinessInformation";
 import BusinessAddressAndSupport from "./pages/BusinessAddressAndSupport";
@@ -19,6 +20,7 @@ export default function App() {
         <Routes>
         <Route path="/" element={<GeneralInformation />} />
         <Route path="/general-information" element={<GeneralInformation />} />
+        <Route path="/dashboard" element={<ApplicationDashboard />} />
         <Route path="/business-type" element={<BusinessType />} />
         <Route path="/business-information" element={<BusinessInformation />} />
         <Route path="/business-address-and-support" element={<BusinessAddressAndSupport />} />

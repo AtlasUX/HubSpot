@@ -84,20 +84,24 @@ export default function BusinessType() {
     if (value !== "company") {
       setBusinessStructure(null);
       setHasConfirmedBusinessType(true);
-      navigate("/business-information");
+      navigate("/dashboard");
     }
   };
 
   const handleStructureSelect = (value: BusinessStructureOption) => {
     setBusinessStructure(value);
     setHasConfirmedBusinessType(true);
-    navigate("/business-information");
+    navigate("/dashboard");
   };
 
   return (
     <div className="flex flex-col h-screen bg-white">
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
-      <PhaseProgress />
+      <div className="flex items-center px-8 pt-4">
+        <button onClick={() => navigate("/dashboard")} className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors">
+          ← Back to application
+        </button>
+      </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 overflow-y-auto">
         <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10">

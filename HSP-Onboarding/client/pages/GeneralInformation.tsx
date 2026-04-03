@@ -26,7 +26,7 @@ export default function GeneralInformation() {
 
   const handleSelect = (value: string) => {
     setCountry(value);
-    navigate("/business-type", { replace: false });
+    navigate("/dashboard", { replace: false });
   };
 
   return (
