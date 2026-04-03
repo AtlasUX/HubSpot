@@ -1,28 +1,51 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Alert, Div, FormLabel, Select, OnboardingTooltip } from "design-system/components";
-import {
-  useOnboarding,
-  type BusinessStructureOption,
-} from "@/contexts/OnboardingContext";
 import { OnboardingHeader } from "design-system/components";
-import WizardSidebar from "@/components/WizardSidebar";
-import WizardFooter from "@/components/WizardFooter";
-import ConfirmBusinessTypeModal from "@/components/ConfirmBusinessTypeModal";
-import RestartApplicationModal from "@/components/RestartApplicationModal";
-import BusinessTypeCard, {
-  IndividualIcon,
-  NonprofitIcon,
-  CompanyIcon,
-} from "@/components/BusinessTypeCard";
+import { useOnboarding, type BusinessStructureOption } from "@/contexts/OnboardingContext";
+import PhaseProgress from "@/components/PhaseProgress";
 
-const BUSINESS_STRUCTURE_OPTIONS = [
-  { value: "sole-proprietorship", label: "Sole proprietorship" },
-  { value: "single-member-llc", label: "Single-member LLC" },
-  { value: "multi-member-llc", label: "Multi-member LLC" },
-  { value: "private-partnership", label: "Private partnership" },
-  { value: "private-corporation", label: "Private corporation" },
-  { value: "other", label: "Other/I'm not sure" },
+const BUSINESS_TYPES = [
+  {
+    value: "individual" as const,
+    label: "Just me",
+    sub: "Sole proprietor, freelancer, or independent contractor",
+    emoji: "👤",
+  },
+  {
+    value: "company" as const,
+    label: "Registered business",
+    sub: "LLC, corporation, or partnership",
+    emoji: "🏢",
+  },
+  {
+    value: "nonprofit" as const,
+    label: "Nonprofit",
+    sub: "Registered charity, foundation, or religious organization",
+    emoji: "💙",
+  },
+];
+
+const STRUCTURES = [
+  {
+    value: "single-member-llc" as BusinessStructureOption,
+    label: "Single-owner LLC",
+    sub: "You're the sole owner of an LLC",
+  },
+  {
+    value: "multi-member-llc" as BusinessStructureOption,
+    label: "Multi-owner LLC or Partnership",
+    sub: "Multiple owners or a general partnership",
+  },
+  {
+    value: "private-corporation" as BusinessStructureOption,
+    label: "Corporation",
+    sub: "C-Corp, S-Corp, or private corporation",
+  },
+  {
+    value: "other" as BusinessStructureOption,
+    label: "Not sure",
+    sub: "We'll help you sort it out",
+  },
 ];
 
 export default function BusinessType() {
@@ -32,228 +55,107 @@ export default function BusinessType() {
     setSelectedBusinessType,
     businessStructure,
     setBusinessStructure,
-    hasConfirmedBusinessType,
     setHasConfirmedBusinessType,
-    resetOnboarding,
   } = useOnboarding();
-  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-  const [restartModalOpen, setRestartModalOpen] = useState(false);
-  const [focusedTooltip, setFocusedTooltip] = useState<"business-classification" | null>(null);
-  const businessClassificationRef = useRef<HTMLDivElement>(null);
-  const businessStructureRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (selectedBusinessType === "company" && businessStructureRef.current) {
-      businessStructureRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
-  }, [selectedBusinessType]);
+  const [pendingType, setPendingType] = useState(selectedBusinessType);
 
-  const handleBusinessTypeChange = (type: "individual" | "nonprofit" | "company") => {
-    setSelectedBusinessType(type);
-    if (type !== "company") {
+  const handleTypeSelect = (value: typeof BUSINESS_TYPES[number]["value"]) => {
+    setPendingType(value);
+    setSelectedBusinessType(value);
+    if (value !== "company") {
       setBusinessStructure(null);
-    }
-  };
-
-  const handleBack = () => {
-    navigate(hasConfirmedBusinessType ? "/business-information" : "/general-information");
-  };
-
-  const handleNext = () => {
-    if (hasConfirmedBusinessType) {
+      setHasConfirmedBusinessType(true);
       navigate("/business-information");
-    } else if (selectedBusinessType) {
-      setConfirmModalOpen(true);
     }
   };
 
-  const handleConfirm = () => {
-    setConfirmModalOpen(false);
+  const handleStructureSelect = (value: BusinessStructureOption) => {
+    setBusinessStructure(value);
     setHasConfirmedBusinessType(true);
     navigate("/business-information");
-  };
-
-  const handleCancelConfirm = () => {
-    setConfirmModalOpen(false);
   };
 
   return (
     <div className="flex flex-col h-screen bg-white">
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
+      <PhaseProgress />
 
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="flex min-h-full">
-          <div className="flex flex-1 min-h-0 pl-0 py-[var(--space-800)] pr-[20px]">
-            <WizardSidebar currentStep="business-type" />
+      <div className="flex-1 flex flex-col items-center justify-center px-6 overflow-y-auto">
+        <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10">
 
-            <div className="flex-1 flex flex-col min-h-0 pl-[20px] pb-[var(--space-1400)]">
-              <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl">
-                <div className="flex flex-col items-start gap-4 w-full">
-                  <h1 className="heading-400">
-                    Select your business type: test
-                  </h1>
-                  <Div />
-                  {hasConfirmedBusinessType ? (
-                    <p className="body-100 text-hs-obsidian [font-feature-settings:'ss01'_on] flex flex-col gap-[var(--space-100)]">
-                      <span className="body-125">
-                        Your business type cannot be changed.
-                      </span>
-                      <span>
-                        To select a different business type, you will need to{" "}
+          <div className="flex flex-col items-center gap-3 text-center w-full">
+            <h1 className="text-[32px] font-semibold text-hs-obsidian leading-tight">
+              How is your business set up?
+            </h1>
+            <p className="text-base text-hs-text-subtle">
+              This determines your tax reporting and required documents.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 w-full">
+            {BUSINESS_TYPES.map(({ value, label, sub, emoji }) => {
+              const isSelected = pendingType === value;
+              return (
+                <div key={value}>
+                  <button
+                    onClick={() => handleTypeSelect(value)}
+                    className={`group flex items-center gap-5 w-full px-6 py-5 rounded-xl border-2 text-left transition-all duration-150
+                      ${isSelected
+                        ? "border-[#4ABACD] bg-[#f0fafb]"
+                        : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb] hover:shadow-sm"
+                      } active:scale-[0.99]`}
+                  >
+                    <span className="text-3xl w-10 text-center flex-shrink-0">{emoji}</span>
+                    <div className="flex flex-col gap-0.5 flex-1">
+                      <span className="text-base font-semibold text-hs-obsidian">{label}</span>
+                      <span className="text-sm text-hs-text-subtle">{sub}</span>
+                    </div>
+                    <span className={`text-xl transition-all duration-200 ml-auto
+                      ${isSelected && value === "company" ? "rotate-90 text-[#4ABACD]" : "text-gray-300 group-hover:text-[#4ABACD]"}`}>
+                      →
+                    </span>
+                  </button>
+
+                  {value === "company" && isSelected && (
+                    <div className="mt-2 ml-6 flex flex-col gap-2">
+                      <p className="text-xs font-medium text-hs-text-subtle uppercase tracking-wide px-1 pt-1">
+                        What's your structure?
+                      </p>
+                      {STRUCTURES.map((s) => (
                         <button
-                          type="button"
-                          onClick={() => setRestartModalOpen(true)}
-                          className="link-100 bg-transparent border-0 p-0 cursor-pointer text-left inline"
+                          key={s.value}
+                          onClick={() => handleStructureSelect(s.value)}
+                          className={`group flex items-center gap-4 w-full px-5 py-4 rounded-lg border-2 text-left transition-all duration-150
+                            ${businessStructure === s.value
+                              ? "border-[#4ABACD] bg-[#f0fafb]"
+                              : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                            }`}
                         >
-                          restart your application
+                          <div className="flex flex-col gap-0.5 flex-1">
+                            <span className="text-sm font-semibold text-hs-obsidian">{s.label}</span>
+                            <span className="text-xs text-hs-text-subtle">{s.sub}</span>
+                          </div>
+                          <span className="text-gray-300 group-hover:text-[#4ABACD] text-lg transition-colors ml-auto">→</span>
                         </button>
-                        .
-                      </span>
-                    </p>
-                  ) : (
-                    <Alert
-                      type="warning"
-                      title
-                      titleText="Your business type can't be changed after this step."
-                      text="If you need to update it, you'll have to restart this application. Not sure? Check your registration documents or consult your accountant before continuing."
-                    />
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                <div
-                  ref={businessClassificationRef}
-                  tabIndex={0}
-                  onFocus={() => setFocusedTooltip("business-classification")}
-                  onBlur={(e) => {
-                    if (!businessClassificationRef.current?.contains(e.relatedTarget as Node)) {
-                      setFocusedTooltip(null);
-                    }
-                  }}
-                  onClick={() => businessClassificationRef.current?.focus()}
-                  className="flex flex-col items-start gap-2 w-full outline-none"
-                >
-                  <FormLabel required>
-                    What is your legal business classification
-                  </FormLabel>
-
-                  <div className="flex flex-col items-start gap-6 w-full">
-                    <BusinessTypeCard
-                      title="Individual"
-                      description="E.g. a small side business that is not incorporated, independent consultant, contractor, or freelancer"
-                      icon={<IndividualIcon />}
-                      selected={selectedBusinessType === "individual"}
-                      disabled={hasConfirmedBusinessType}
-                      onChange={() => handleBusinessTypeChange("individual")}
-                    />
-
-                    <BusinessTypeCard
-                      title="Nonprofit"
-                      description="E.g. a registered charity, religious organization, or foundation"
-                      icon={<NonprofitIcon />}
-                      selected={selectedBusinessType === "nonprofit"}
-                      disabled={hasConfirmedBusinessType}
-                      onChange={() => handleBusinessTypeChange("nonprofit")}
-                    />
-
-                    <BusinessTypeCard
-                      title="Company"
-                      description="E.g. multi-member LLC, private or public corporation"
-                      icon={<CompanyIcon />}
-                      selected={selectedBusinessType === "company"}
-                      disabled={hasConfirmedBusinessType}
-                      onChange={() => handleBusinessTypeChange("company")}
-                    />
-
-                    {selectedBusinessType === "company" && (
-                      <div
-                        ref={businessStructureRef}
-                        className="flex flex-col items-start gap-2 w-full max-w-md"
-                      >
-                        <Select
-                          label="Select your business structure"
-                          placeholder="Select your business structure"
-                          value={businessStructure ?? ""}
-                          options={BUSINESS_STRUCTURE_OPTIONS}
-                          onChange={(v) =>
-                            setBusinessStructure(v as BusinessStructureOption)
-                          }
-                          required
-                          disabled={hasConfirmedBusinessType}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+              );
+            })}
           </div>
 
-          <div
-            className="w-[330px] shrink-0 self-stretch flex flex-col py-[var(--space-800)] px-5"
-            style={{ backgroundColor: "var(--Accent-Gypsum, #f5f8fa)" }}
-          >
-            {/* Spacers to align tooltip with "What is your legal business classification" label */}
-            <div className="flex flex-col items-start gap-[var(--space-800)] w-full">
-              <div className="flex flex-col items-start gap-4 w-full invisible pointer-events-none select-none" aria-hidden>
-                <h1 className="heading-400">Select your business type</h1>
-                <Div />
-              </div>
-              <div className="invisible pointer-events-none select-none" aria-hidden>
-                {hasConfirmedBusinessType ? (
-                  <p className="body-100 text-hs-obsidian [font-feature-settings:'ss01'_on] flex flex-col gap-[var(--space-100)]">
-                    <span className="body-125">Your business type cannot be changed.</span>
-                    <span>To select a different business type, you will need to restart your application.</span>
-                  </p>
-                ) : (
-                  <Alert
-                    type="warning"
-                    title
-                    titleText="Your business type can't be changed after this step."
-                    text="If you need to update it, you'll have to restart this application. Not sure? Check your registration documents or consult your accountant before continuing."
-                  />
-                )}
-              </div>
-              {(focusedTooltip === "business-classification" || hasConfirmedBusinessType) && (
-                <OnboardingTooltip
-                  title="Business type"
-                  description={"If you have not filed paperwork to register as a business entity, then your business type is likely to be Individual.\n\nIf you choose 'Individual' or 'Company structured as a Single Member LLC', please be aware that your 1099K and business taxes will be reported under your personal Social Security Number (SSN). If you would like your 1099K or taxes to be reported using your business tax ID, please DO NOT select 'Individual' or 'Single Member LLC'."}
-                  className="-mt-20"
-                />
-              )}
-            </div>
-          </div>
+          <p className="text-xs text-hs-text-subtle text-center">
+            Not sure what applies to you?{" "}
+            <a href="#" className="text-[#0091AE] underline hover:text-[#007a94]">
+              Check your registration documents
+            </a>{" "}
+            or talk to your accountant.
+          </p>
+
         </div>
       </div>
-
-      <WizardFooter
-        onBack={handleBack}
-        onNext={handleNext}
-        nextDisabled={
-          !hasConfirmedBusinessType &&
-          (!selectedBusinessType ||
-            (selectedBusinessType === "company" && !businessStructure))
-        }
-      />
-
-      <RestartApplicationModal
-        open={restartModalOpen}
-        onClose={() => setRestartModalOpen(false)}
-        onConfirm={() => {
-          setRestartModalOpen(false);
-          resetOnboarding();
-          navigate("/general-information", { state: { restartSuccess: true } });
-        }}
-      />
-
-      {selectedBusinessType && (
-        <ConfirmBusinessTypeModal
-          open={confirmModalOpen}
-          businessType={selectedBusinessType}
-          businessStructure={selectedBusinessType === "company" ? businessStructure : null}
-          onConfirm={handleConfirm}
-          onCancel={handleCancelConfirm}
-        />
-      )}
     </div>
   );
 }
