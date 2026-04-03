@@ -54,7 +54,7 @@ export default function ApplicationDashboard() {
       title: "Business structure",
       description: "How your business is legally set up",
       path: "/business-type",
-      needs: ["Business type (LLC, Corp, sole prop…)", "Registration documents if unsure"],
+      needs: ["Business type (LLC, Corp, sole prop…)"],
       status: state.selectedBusinessType
         ? (state.selectedBusinessType !== "company" || state.businessStructure ? "complete" : "in-progress")
         : "not-started",
