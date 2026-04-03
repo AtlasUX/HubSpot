@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { OnboardingHeader, Select, Div, Toast } from "design-system/components";
+import { OnboardingHeader, Toast } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
-import { COUNTRY_OPTIONS } from "@shared/countries";
 import WizardSidebar from "@/components/WizardSidebar";
 import WizardFooter from "@/components/WizardFooter";
+
+const SUPPORTED_COUNTRIES = [
+  { value: "US", label: "United States", flag: "🇺🇸" },
+  { value: "GB", label: "United Kingdom", flag: "🇬🇧" },
+  { value: "CA", label: "Canada", flag: "🇨🇦" },
+];
 
 export default function GeneralInformation() {
   const navigate = useNavigate();
@@ -20,15 +25,14 @@ export default function GeneralInformation() {
     }
   }, [location.state, location.pathname, navigate]);
 
+  const handleSelect = (value: string) => {
+    setCountry(value);
+    navigate("/business-type", { replace: false });
+  };
+
   const handleBack = () => {
     console.log("Back clicked");
     // TODO: Navigate to Processor Selection
-  };
-
-  const handleNext = () => {
-    if (country) {
-      navigate("/business-type", { replace: false });
-    }
   };
 
   return (
@@ -50,27 +54,36 @@ export default function GeneralInformation() {
 
             <div className="flex-1 flex flex-col min-h-0 pl-[20px] pb-[var(--space-1400)]">
               <div className="flex flex-col items-start gap-[var(--space-800)] max-w-2xl">
-                <div className="flex flex-col items-start gap-4 w-full">
-                  <h1 className="heading-400">
-                    Get started with HubSpot payments
-                  </h1>
-                  <p className="body-100 text-hs-obsidian">
-                    We collect this information to comply with financial and legal obligations.
+                <div className="flex flex-col items-start gap-2 w-full">
+                  <h1 className="heading-400">Where is your company located?</h1>
+                  <p className="body-100 text-hs-text-subtle">
+                    We currently support the following countries.
                   </p>
-                  <Div />
                 </div>
 
-                <div className="flex flex-col items-start gap-6 w-full max-w-md">
-                  <Select
-                    label="Where is your company located"
-                    placeholder="Select country"
-                    value={country}
-                    options={COUNTRY_OPTIONS}
-                    onChange={setCountry}
-                    required
-                    searchable
-                  />
+                <div className="flex flex-col gap-3 w-full max-w-sm">
+                  {SUPPORTED_COUNTRIES.map(({ value, label, flag }) => (
+                    <button
+                      key={value}
+                      onClick={() => handleSelect(value)}
+                      className={`flex items-center gap-4 w-full px-5 py-4 rounded-lg border-2 text-left transition-all duration-150
+                        ${country === value
+                          ? "border-[#4ABACD] bg-[#E8F4F7]"
+                          : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f5fbfc]"
+                        }`}
+                    >
+                      <span className="text-2xl">{flag}</span>
+                      <span className="text-hs-obsidian font-medium">{label}</span>
+                    </button>
+                  ))}
                 </div>
+
+                <p className="body-100 text-hs-text-subtle">
+                  Live outside these countries?{" "}
+                  <a href="#" className="text-[#0091AE] underline hover:text-[#007a94]">
+                    You can sign up for Stripe Payments
+                  </a>
+                </p>
               </div>
             </div>
           </div>
@@ -84,7 +97,7 @@ export default function GeneralInformation() {
 
       <WizardFooter
         onBack={handleBack}
-        onNext={handleNext}
+        onNext={() => navigate("/business-type")}
         nextDisabled={!country}
       />
     </div>
