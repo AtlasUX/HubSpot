@@ -103,8 +103,8 @@ export default function BusinessType() {
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 overflow-y-auto">
-        <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10">
+      <div className="flex-1 flex flex-col items-center px-6 overflow-y-auto">
+        <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10 my-auto">
 
           <div className="flex flex-col items-center gap-3 text-center w-full">
             <h1 className="text-[32px] font-semibold text-hs-obsidian leading-tight">

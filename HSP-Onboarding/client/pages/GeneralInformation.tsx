@@ -42,8 +42,8 @@ export default function GeneralInformation() {
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
       <PhaseProgress />
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="flex flex-col items-center gap-10 w-full max-w-lg">
+      <div className="flex-1 flex flex-col items-center px-6 overflow-y-auto">
+        <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10 my-auto">
 
           <div className="flex flex-col items-center gap-3 text-center">
             <h1 className="text-[32px] font-semibold text-hs-obsidian leading-tight">
