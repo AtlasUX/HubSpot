@@ -726,7 +726,7 @@ export function Gallery() {
                 <div className="max-w-md space-y-6">
                   <TextField
                     label="Legal business name"
-                    placeholder=""
+                    placeholder="Enter business name"
                     required
                   />
                   <TextField

@@ -14,7 +14,7 @@ import ReviewAndFinish from "./pages/ReviewAndFinish";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <OnboardingProvider>
         <Routes>
         <Route path="/" element={<GeneralInformation />} />

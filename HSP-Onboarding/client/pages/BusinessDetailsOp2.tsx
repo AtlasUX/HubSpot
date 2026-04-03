@@ -143,6 +143,7 @@ export default function BusinessDetailsOp2() {
                     <div className="flex flex-col items-start gap-6 w-[448px]">
                       <TextField
                         label="Legal business name"
+                        placeholder="Enter business name"
                         value={legalBusinessName}
                         onChange={setLegalBusinessName}
                         required
@@ -152,6 +153,7 @@ export default function BusinessDetailsOp2() {
 
                       <TextField
                         label="Doing business as"
+                        placeholder="Company name"
                         value={doingBusinessAs}
                         onChange={setDoingBusinessAs}
                         onFocus={() => setFocusedField("doing-business-as")}
@@ -192,6 +194,7 @@ export default function BusinessDetailsOp2() {
 
                       <TextField
                         label="City"
+                        placeholder="Default city"
                         value={businessAddressCity}
                         onChange={setBusinessAddressCity}
                         required

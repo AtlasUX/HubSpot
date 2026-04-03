@@ -5,6 +5,7 @@ import { createServer } from "./server";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: mode === "production" ? "/HSP-Onboarding/" : "/",
   server: {
     host: "127.0.0.1",
     port: 8080,

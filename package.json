@@ -1,0 +1,8 @@
+{
+  "name": "hubspot-projects",
+  "private": true,
+  "workspaces": [
+    "design-system",
+    "HSP-Onboarding"
+  ]
+}

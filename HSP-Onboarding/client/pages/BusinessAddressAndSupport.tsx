@@ -122,6 +122,7 @@ export default function BusinessAddressAndSupport() {
                   {/* Option 1: Flat layout – no cards, same as Business industry page */}
                   <TextField
                     label="Legal business name"
+                    placeholder="Enter business name"
                     value={legalBusinessName}
                     onChange={setLegalBusinessName}
                     required
@@ -131,6 +132,7 @@ export default function BusinessAddressAndSupport() {
 
                   <TextField
                     label="Doing business as"
+                    placeholder="Company name"
                     value={doingBusinessAs}
                     onChange={setDoingBusinessAs}
                     onFocus={() => setFocusedField("doing-business-as")}
@@ -171,6 +173,7 @@ export default function BusinessAddressAndSupport() {
 
                   <TextField
                     label="City"
+                    placeholder="Default city"
                     value={businessAddressCity}
                     onChange={setBusinessAddressCity}
                     required
