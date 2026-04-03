@@ -25,26 +25,44 @@ const BUSINESS_TYPES = [
   },
 ];
 
-const STRUCTURES = [
+const STRUCTURES: {
+  value: BusinessStructureOption;
+  label: string;
+  sub: string;
+  taxNote?: string;
+  taxNoteWarning?: boolean;
+}[] = [
   {
-    value: "single-member-llc" as BusinessStructureOption,
-    label: "Single-owner LLC",
-    sub: "You're the sole owner of an LLC",
+    value: "sole-proprietorship",
+    label: "Sole proprietorship",
+    sub: "Unregistered individual business — no separate legal entity",
+    taxNote: "Your 1099K and taxes report under your personal SSN, not a business tax ID",
+    taxNoteWarning: true,
   },
   {
-    value: "multi-member-llc" as BusinessStructureOption,
-    label: "Multi-owner LLC or Partnership",
-    sub: "Multiple owners or a general partnership",
+    value: "single-member-llc",
+    label: "Single-member LLC",
+    sub: "One owner, registered as an LLC",
+    taxNote: "Your 1099K and taxes report under your personal SSN, not a business tax ID",
+    taxNoteWarning: true,
   },
   {
-    value: "private-corporation" as BusinessStructureOption,
-    label: "Corporation",
+    value: "multi-member-llc",
+    label: "Multi-member LLC",
+    sub: "Multiple owners, registered as an LLC",
+    taxNote: "Tax reporting uses your business EIN",
+  },
+  {
+    value: "private-partnership",
+    label: "Private partnership",
+    sub: "Two or more partners sharing ownership",
+    taxNote: "Tax reporting uses your business EIN",
+  },
+  {
+    value: "private-corporation",
+    label: "Private corporation",
     sub: "C-Corp, S-Corp, or private corporation",
-  },
-  {
-    value: "other" as BusinessStructureOption,
-    label: "Not sure",
-    sub: "We'll help you sort it out",
+    taxNote: "Tax reporting uses your business EIN",
   },
 ];
 
@@ -132,11 +150,16 @@ export default function BusinessType() {
                               : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
                             }`}
                         >
-                          <div className="flex flex-col gap-0.5 flex-1">
+                          <div className="flex flex-col gap-1 flex-1">
                             <span className="text-sm font-semibold text-hs-obsidian">{s.label}</span>
                             <span className="text-xs text-hs-text-subtle">{s.sub}</span>
+                            {s.taxNote && (
+                              <span className={`text-xs mt-0.5 ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                                {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                              </span>
+                            )}
                           </div>
-                          <span className="text-gray-300 group-hover:text-[#4ABACD] text-lg transition-colors ml-auto">→</span>
+                          <span className="text-gray-300 group-hover:text-[#4ABACD] text-lg transition-colors ml-auto flex-shrink-0">→</span>
                         </button>
                       ))}
                     </div>
