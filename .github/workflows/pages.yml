@@ -25,14 +25,18 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - run: npm ci
-      - run: npm run build:client
-      - run: cp dist/spa/index.html dist/spa/404.html
-      - run: touch dist/spa/.nojekyll
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build HSP-Onboarding
+        run: npm run build:client -w hsp-onboarding
+
+      - run: cp HSP-Onboarding/dist/spa/index.html HSP-Onboarding/dist/spa/404.html
+      - run: touch HSP-Onboarding/dist/spa/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist/spa
+          path: HSP-Onboarding/dist/spa
 
   deploy:
     needs: build
