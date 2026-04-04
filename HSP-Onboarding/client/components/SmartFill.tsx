@@ -209,10 +209,13 @@ function BusinessDocSlot() {
         </svg>
       </div>
       <div className="flex flex-col gap-0.5 min-w-0">
-        <p className="text-sm font-semibold text-hs-obsidian">Upload a business document</p>
-        <p className="text-xs text-hs-text-subtle">IRS letter, operating agreement, articles of incorporation, or business license</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-hs-obsidian">Business entity documents</p>
+          <span className="text-[10px] font-semibold text-hs-text-subtle bg-gray-100 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Optional</span>
+        </div>
+        <p className="text-xs text-hs-text-subtle">Upload your IRS EIN letter, operating agreement, articles of incorporation, or business license — we'll autofill as much of your application as possible</p>
       </div>
-      <span className="text-xs text-[#4ABACD] font-medium flex-shrink-0 ml-auto">Browse</span>
+      <span className="text-xs text-[#4ABACD] font-medium flex-shrink-0 ml-auto pl-3">Browse</span>
     </div>
   );
 }
