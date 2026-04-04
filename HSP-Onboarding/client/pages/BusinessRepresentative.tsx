@@ -8,36 +8,12 @@ const inputClass =
   "w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm";
 
 const labelClass = "text-sm font-semibold text-hs-obsidian";
-const hintClass = "text-xs text-hs-text-subtle";
 
-function Field({
-  label,
-  hint,
-  required,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className={labelClass}>
-        {label}
-        {required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
-      {hint && <p className={hintClass}>{hint}</p>}
-      {children}
-    </div>
-  );
-}
-
-function SectionHeading({ title, subtitle }: { title: string; subtitle: string }) {
+function SectionHeading({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="flex flex-col gap-0.5 pb-1 border-b border-gray-100">
       <h2 className="text-base font-semibold text-hs-obsidian">{title}</h2>
-      <p className="text-sm text-hs-text-subtle">{subtitle}</p>
+      {subtitle && <p className="text-sm text-hs-text-subtle">{subtitle}</p>}
     </div>
   );
 }
@@ -70,13 +46,8 @@ function simulateIdExtraction(): Promise<IdExtracted> {
   );
 }
 
-function IdUploadCard({
-  onApply,
-}: {
-  onApply: (data: IdExtracted) => void;
-}) {
+function IdUploadCard({ onApply }: { onApply: (data: IdExtracted) => void }) {
   const [state, setState] = useState<IdUploadState>("idle");
-  const [extracted, setExtracted] = useState<IdExtracted | null>(null);
   const [preview, setPreview] = useState<IdExtracted | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -84,7 +55,6 @@ function IdUploadCard({
   async function handleFile() {
     setState("processing");
     const data = await simulateIdExtraction();
-    setExtracted(data);
     setPreview({ ...data });
     setState("preview");
   }
@@ -142,7 +112,7 @@ function IdUploadCard({
             <span className="text-sm font-semibold text-hs-obsidian">ID extracted — review & apply</span>
           </div>
           <button
-            onClick={() => { setState("idle"); setExtracted(null); setPreview(null); }}
+            onClick={() => { setState("idle"); setPreview(null); }}
             className="text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors"
           >
             Clear
@@ -152,67 +122,32 @@ function IdUploadCard({
         <div className="grid grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">First name</span>
-            <input
-              type="text"
-              value={preview.firstName}
-              onChange={(e) => setPreview({ ...preview, firstName: e.target.value })}
-              className={inputClass}
-            />
+            <input type="text" value={preview.firstName} onChange={(e) => setPreview({ ...preview, firstName: e.target.value })} className={inputClass} />
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">Last name</span>
-            <input
-              type="text"
-              value={preview.lastName}
-              onChange={(e) => setPreview({ ...preview, lastName: e.target.value })}
-              className={inputClass}
-            />
+            <input type="text" value={preview.lastName} onChange={(e) => setPreview({ ...preview, lastName: e.target.value })} className={inputClass} />
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">Date of birth</span>
-            <input
-              type="date"
-              value={preview.dateOfBirth}
-              onChange={(e) => setPreview({ ...preview, dateOfBirth: e.target.value })}
-              className={inputClass}
-            />
+            <input type="date" value={preview.dateOfBirth} onChange={(e) => setPreview({ ...preview, dateOfBirth: e.target.value })} className={inputClass} />
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">Street</span>
-            <input
-              type="text"
-              value={preview.street}
-              onChange={(e) => setPreview({ ...preview, street: e.target.value })}
-              className={inputClass}
-            />
+            <input type="text" value={preview.street} onChange={(e) => setPreview({ ...preview, street: e.target.value })} className={inputClass} />
           </div>
           <div className="flex flex-col gap-1">
             <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">City</span>
-            <input
-              type="text"
-              value={preview.city}
-              onChange={(e) => setPreview({ ...preview, city: e.target.value })}
-              className={inputClass}
-            />
+            <input type="text" value={preview.city} onChange={(e) => setPreview({ ...preview, city: e.target.value })} className={inputClass} />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">State</span>
-              <input
-                type="text"
-                value={preview.state}
-                onChange={(e) => setPreview({ ...preview, state: e.target.value })}
-                className={inputClass}
-              />
+              <input type="text" value={preview.state} onChange={(e) => setPreview({ ...preview, state: e.target.value })} className={inputClass} />
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-hs-text-subtle uppercase tracking-wide">ZIP</span>
-              <input
-                type="text"
-                value={preview.zip}
-                onChange={(e) => setPreview({ ...preview, zip: e.target.value })}
-                className={inputClass}
-              />
+              <input type="text" value={preview.zip} onChange={(e) => setPreview({ ...preview, zip: e.target.value })} className={inputClass} />
             </div>
           </div>
         </div>
@@ -230,21 +165,31 @@ function IdUploadCard({
   return null;
 }
 
+const PHONE_COUNTRIES = [
+  { code: "US", flag: "🇺🇸", dial: "+1" },
+  { code: "GB", flag: "🇬🇧", dial: "+44" },
+  { code: "CA", flag: "🇨🇦", dial: "+1" },
+];
+
 export default function BusinessRepresentative() {
   const navigate = useNavigate();
   const {
     repFirstName, setRepFirstName,
     repLastName, setRepLastName,
     repEmail, setRepEmail,
-    repJobTitle, setRepJobTitle,
     repDateOfBirth, setRepDateOfBirth,
     repAddressStreet, setRepAddressStreet,
     repAddressCity, setRepAddressCity,
     repAddressState, setRepAddressState,
     repAddressZip, setRepAddressZip,
     repPhone, setRepPhone,
+    repPhoneCountryCode, setRepPhoneCountryCode,
     repSsnLast4, setRepSsnLast4,
   } = useOnboarding();
+
+  const [addressLine2, setAddressLine2] = useState("");
+  const [isControl, setIsControl] = useState(false);
+  const [showSsn, setShowSsn] = useState(false);
 
   function applyIdData(data: IdExtracted) {
     setRepFirstName(data.firstName);
@@ -256,15 +201,20 @@ export default function BusinessRepresentative() {
     setRepAddressZip(data.zip);
   }
 
+  const currentCountry = PHONE_COUNTRIES.find((c) => c.code === repPhoneCountryCode) ?? PHONE_COUNTRIES[0];
+
   const isValid =
     repFirstName.trim().length > 0 &&
     repLastName.trim().length > 0 &&
+    repEmail.trim().length > 0 &&
+    isControl &&
     repDateOfBirth.length > 0 &&
     repAddressStreet.trim().length > 0 &&
     repAddressCity.trim().length > 0 &&
     repAddressState.length > 0 &&
     repAddressZip.trim().length >= 5 &&
-    repSsnLast4.trim().length === 4;
+    repPhone.trim().length > 0 &&
+    repSsnLast4.trim().length >= 9;
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -286,122 +236,86 @@ export default function BusinessRepresentative() {
               Business representative
             </h1>
             <p className="text-base text-hs-text-subtle">
-              The person legally responsible for this account — typically an owner, officer, or director.
+              You may complete this on behalf of the company even if you are not a 25% owner — you just need the details for anyone who owns 25% or more.
             </p>
           </div>
 
           {/* ID upload */}
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-hs-obsidian">Quick fill from ID</span>
+              <span className={labelClass}>Quick fill from ID</span>
               <span className="text-xs bg-[#f0fafb] text-[#4ABACD] px-2 py-0.5 rounded-full font-medium">Optional</span>
             </div>
             <IdUploadCard onApply={applyIdData} />
           </div>
 
-          {/* Personal info */}
+          {/* Identity */}
           <div className="flex flex-col gap-5">
-            <SectionHeading
-              title="Personal information"
-              subtitle="Must match government-issued ID"
-            />
+            <SectionHeading title="Identity" subtitle="Must match government-issued ID" />
 
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="First name" required>
-                <input
-                  type="text"
-                  value={repFirstName}
-                  onChange={(e) => setRepFirstName(e.target.value)}
-                  placeholder="First name"
-                  className={inputClass}
-                />
-              </Field>
-              <Field label="Last name" required>
-                <input
-                  type="text"
-                  value={repLastName}
-                  onChange={(e) => setRepLastName(e.target.value)}
-                  placeholder="Last name"
-                  className={inputClass}
-                />
-              </Field>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Legal first name <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={repFirstName}
+                onChange={(e) => setRepFirstName(e.target.value)}
+                placeholder="First name"
+                className={inputClass}
+              />
             </div>
 
-            <Field label="Date of birth" required>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Legal last name <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={repLastName}
+                onChange={(e) => setRepLastName(e.target.value)}
+                placeholder="Last name"
+                className={inputClass}
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Email <span className="text-red-500">*</span></label>
+              <input
+                type="email"
+                value={repEmail}
+                onChange={(e) => setRepEmail(e.target.value)}
+                placeholder="name@example.com"
+                className={inputClass}
+              />
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={isControl}
+                onChange={(e) => setIsControl(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#4ABACD] focus:ring-[#4ABACD] flex-shrink-0 cursor-pointer"
+              />
+              <span className="text-sm text-hs-obsidian leading-snug">
+                This business representative is an owner, executive, senior manager, or someone with significant managerial control within the company.{" "}
+                <span className="text-red-500">*</span>
+              </span>
+            </label>
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Date of birth <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 value={repDateOfBirth}
                 onChange={(e) => setRepDateOfBirth(e.target.value)}
                 className={inputClass}
               />
-            </Field>
-
-            <Field
-              label="Last 4 digits of SSN"
-              hint="Used for identity verification only — never stored in full"
-              required
-            >
-              <input
-                type="text"
-                value={repSsnLast4}
-                onChange={(e) => {
-                  const cleaned = e.target.value.replace(/\D/g, "");
-                  if (cleaned.length <= 4) setRepSsnLast4(cleaned);
-                }}
-                placeholder="0000"
-                maxLength={4}
-                inputMode="numeric"
-                className={inputClass}
-              />
-            </Field>
-          </div>
-
-          {/* Role */}
-          <div className="flex flex-col gap-5">
-            <SectionHeading
-              title="Role at company"
-              subtitle="How this person is connected to the business"
-            />
-
-            <Field label="Job title" hint="e.g. CEO, Owner, President">
-              <input
-                type="text"
-                value={repJobTitle}
-                onChange={(e) => setRepJobTitle(e.target.value)}
-                placeholder="e.g. CEO"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Work email">
-              <input
-                type="email"
-                value={repEmail}
-                onChange={(e) => setRepEmail(e.target.value)}
-                placeholder="name@company.com"
-                className={inputClass}
-              />
-            </Field>
-
-            <Field label="Phone number">
-              <input
-                type="tel"
-                value={repPhone}
-                onChange={(e) => setRepPhone(e.target.value)}
-                placeholder="+1 (555) 000-0000"
-                className={inputClass}
-              />
-            </Field>
+            </div>
           </div>
 
           {/* Home address */}
           <div className="flex flex-col gap-5">
-            <SectionHeading
-              title="Home address"
-              subtitle="Personal residential address — not your business address"
-            />
+            <SectionHeading title="Home address" subtitle="Personal residential address — not your business address" />
 
-            <Field label="Street address" required>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Home address <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 value={repAddressStreet}
@@ -409,52 +323,101 @@ export default function BusinessRepresentative() {
                 placeholder="Street address"
                 className={inputClass}
               />
-            </Field>
+              <input
+                type="text"
+                value={addressLine2}
+                onChange={(e) => setAddressLine2(e.target.value)}
+                placeholder="Address line 2"
+                className={inputClass}
+              />
+            </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="col-span-1 flex flex-col gap-1.5">
-                <label className={labelClass}>
-                  City<span className="text-red-500 ml-0.5">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={repAddressCity}
-                  onChange={(e) => setRepAddressCity(e.target.value)}
-                  placeholder="City"
-                  className={inputClass}
-                />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>City <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={repAddressCity}
+                onChange={(e) => setRepAddressCity(e.target.value)}
+                placeholder="City"
+                className={inputClass}
+              />
+            </div>
 
-              <div className="col-span-1 flex flex-col gap-1.5">
-                <label className={labelClass}>
-                  State<span className="text-red-500 ml-0.5">*</span>
-                </label>
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>State <span className="text-red-500">*</span></label>
+              <select
+                value={repAddressState}
+                onChange={(e) => setRepAddressState(e.target.value)}
+                className={`${inputClass} bg-white`}
+              >
+                <option value="">Select state</option>
+                {US_STATE_OPTIONS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Zip code <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                value={repAddressZip}
+                onChange={(e) => setRepAddressZip(e.target.value)}
+                placeholder="00000"
+                maxLength={10}
+                className={inputClass}
+              />
+            </div>
+          </div>
+
+          {/* Contact & identity verification */}
+          <div className="flex flex-col gap-5">
+            <SectionHeading title="Contact & verification" />
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Phone number <span className="text-red-500">*</span></label>
+              <div className="flex gap-2">
                 <select
-                  value={repAddressState}
-                  onChange={(e) => setRepAddressState(e.target.value)}
-                  className={`${inputClass} bg-white`}
+                  value={repPhoneCountryCode}
+                  onChange={(e) => setRepPhoneCountryCode(e.target.value)}
+                  className="px-3 py-3 rounded-lg border border-gray-200 bg-white text-sm text-hs-obsidian focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors flex-shrink-0"
                 >
-                  <option value="">State</option>
-                  {US_STATE_OPTIONS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
+                  {PHONE_COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.code}>{c.flag} {c.dial}</option>
                   ))}
                 </select>
-              </div>
-
-              <div className="col-span-1 flex flex-col gap-1.5">
-                <label className={labelClass}>
-                  ZIP code<span className="text-red-500 ml-0.5">*</span>
-                </label>
                 <input
-                  type="text"
-                  value={repAddressZip}
-                  onChange={(e) => setRepAddressZip(e.target.value)}
-                  placeholder="00000"
-                  maxLength={10}
+                  type="tel"
+                  value={repPhone}
+                  onChange={(e) => setRepPhone(e.target.value)}
+                  placeholder="+1 (555) 555-5555"
                   className={inputClass}
                 />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>Social Security number <span className="text-red-500">*</span></label>
+              <p className="text-xs text-hs-text-subtle">Used for identity verification only — encrypted and never stored in plain text</p>
+              <div className="relative">
+                <input
+                  type={showSsn ? "text" : "password"}
+                  value={repSsnLast4}
+                  onChange={(e) => {
+                    const cleaned = e.target.value.replace(/\D/g, "").slice(0, 9);
+                    setRepSsnLast4(cleaned);
+                  }}
+                  placeholder="000000000"
+                  inputMode="numeric"
+                  className={`${inputClass} pr-16`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSsn(!showSsn)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors"
+                >
+                  {showSsn ? "Hide" : "Show"}
+                </button>
               </div>
             </div>
           </div>
