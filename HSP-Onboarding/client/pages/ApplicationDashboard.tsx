@@ -60,7 +60,7 @@ export default function ApplicationDashboard() {
       id: "identity",
       title: "Business identity",
       description: "Structure, legal name, industry, products, and registered address",
-      path: "/business-information",
+      path: state.selectedBusinessType ? "/business-information" : "/business-type",
       needs: ["Business type", "Legal business name", "Industry", "Products / services", "Registered address"],
       status: state.selectedBusinessType && state.legalBusinessName && state.industry && state.businessAddressStreet && state.businessAddressCity
         ? "complete"
