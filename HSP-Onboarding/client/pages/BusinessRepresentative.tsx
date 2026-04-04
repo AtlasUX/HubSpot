@@ -513,7 +513,9 @@ export default function BusinessRepresentative() {
     repDateOfBirth.length > 0 ||
     repAddressStreet.trim().length > 0 ||
     repPhone.trim().length > 0 ||
-    repSsnLast4.trim().length > 0;
+    repSsnLast4.trim().length > 0 ||
+    repIsOwner ||
+    owners.length > 0;
 
   return (
     <div className="flex flex-col h-screen bg-white">
