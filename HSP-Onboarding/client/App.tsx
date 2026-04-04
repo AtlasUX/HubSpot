@@ -10,7 +10,6 @@ import BusinessAddressAndSupport from "./pages/BusinessAddressAndSupport";
 import BusinessDetailsOp2 from "./pages/BusinessDetailsOp2";
 import BusinessFinancials from "./pages/BusinessFinancials";
 import BusinessRepresentative from "./pages/BusinessRepresentative";
-import Owners from "./pages/Owners";
 import ReviewAndFinish from "./pages/ReviewAndFinish";
 
 export default function App() {
@@ -27,7 +26,6 @@ export default function App() {
         <Route path="/business-details-op2" element={<BusinessDetailsOp2 />} />
         <Route path="/business-financials" element={<BusinessFinancials />} />
         <Route path="/business-representative" element={<BusinessRepresentative />} />
-        <Route path="/owners" element={<Owners />} />
         <Route path="/review-and-finish" element={<ReviewAndFinish />} />
         <Route path="/design-system" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Gallery /></Suspense>} />
         </Routes>

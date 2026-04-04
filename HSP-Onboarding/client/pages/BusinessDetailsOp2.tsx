@@ -69,7 +69,7 @@ export default function BusinessDetailsOp2() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← Back to application
+          ← All sections
         </button>
         <button
           onClick={() => setShowInvite(true)}
@@ -79,7 +79,7 @@ export default function BusinessDetailsOp2() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite someone
+          Invite collaborator
         </button>
       </div>
 
@@ -88,7 +88,7 @@ export default function BusinessDetailsOp2() {
 
           <div className="flex flex-col gap-2">
             <h1 className="text-[32px] font-semibold text-hs-obsidian leading-tight">
-              Contact & presence
+              Contact & support
             </h1>
             <p className="text-base text-hs-text-subtle">
               How customers find your business online and reach you for support.
@@ -184,7 +184,7 @@ export default function BusinessDetailsOp2() {
       </div>
       {showInvite && (
         <InviteModal
-          sectionTitle="Contact & presence"
+          sectionTitle="Contact & support"
           onClose={() => setShowInvite(false)}
           onSend={addInvite}
         />

@@ -73,7 +73,7 @@ export default function ApplicationDashboard() {
     },
     {
       id: "contact",
-      title: "Contact & presence",
+      title: "Contact & support",
       description: "Website, business email, and customer support contact",
       path: "/business-details-op2",
       needs: ["Business website", "Business email & phone", "Support email & phone"],
@@ -101,31 +101,17 @@ export default function ApplicationDashboard() {
     },
     {
       id: "representative",
-      title: "Business representative",
-      description: "The person legally responsible for this account",
+      title: "Representative & owners",
+      description: "The person legally responsible for this account, and anyone who owns 25% or more",
       path: "/business-representative",
-      needs: ["Full name & date of birth", "Home address", "SSN"],
-      status: state.repFirstName && state.repLastName && state.repSsnLast4
+      needs: ["Full name & date of birth", "Home address", "SSN", "Ownership (25%+)"],
+      status: state.repFirstName && state.repLastName && state.repSsnLast4 && (state.repIsOwner || state.owners.length > 0)
         ? "complete"
         : state.repFirstName || state.repLastName ? "in-progress"
         : "not-started",
       preview: state.repFirstName ? `${state.repFirstName} ${state.repLastName}` : undefined,
       required: true,
       inviteRole: "business owner or officer",
-    },
-    {
-      id: "ownership",
-      title: "Ownership",
-      description: "Anyone who owns 25% or more of the business",
-      path: "/owners",
-      needs: ["Full name & date of birth", "Home address", "SSN"],
-      status: state.ownerFirstName && state.ownerLastName && state.ownerSsnLast4
-        ? "complete"
-        : state.ownerFirstName || state.ownerLastName ? "in-progress"
-        : "not-started",
-      preview: state.ownerFirstName ? `${state.ownerFirstName} ${state.ownerLastName}` : undefined,
-      required: true,
-      inviteRole: "business owner",
     },
   ];
 

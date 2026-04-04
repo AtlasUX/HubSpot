@@ -236,7 +236,7 @@ export default function BusinessRepresentative() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← Back to application
+          ← All sections
         </button>
         <button
           onClick={() => setShowInvite(true)}
@@ -246,7 +246,7 @@ export default function BusinessRepresentative() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite someone
+          Invite collaborator
         </button>
       </div>
 

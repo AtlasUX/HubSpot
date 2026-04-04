@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payments Acquisition</title>
-    <script>
-      // GitHub Pages SPA redirect
-      // Encodes the current path as a query param on the root URL so index.html can restore it
-      var pathSegmentsToKeep = 3; // /pages/singram/HubSpot
-      var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
-    </script>
+    <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+    <script type="module" crossorigin src="/pages/singram/HubSpot/assets/index-C_kz3rg6.js"></script>
+    <link rel="stylesheet" crossorigin href="/pages/singram/HubSpot/assets/index-Cz45jBKi.css">
   </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

@@ -1,12 +1,15 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
-import { useOnboarding } from "@/contexts/OnboardingContext";
+import { useOnboarding, type Owner } from "@/contexts/OnboardingContext";
 import { US_STATE_OPTIONS } from "@shared/usStates";
 import { InviteModal } from "@/components/InviteModal";
 
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm";
+
+const inputDisabledClass =
+  "w-full px-4 py-3 rounded-lg border border-gray-100 text-hs-text-subtle bg-gray-50 text-sm cursor-not-allowed";
 
 const labelClass = "text-sm font-semibold text-hs-obsidian";
 
@@ -172,6 +175,266 @@ const PHONE_COUNTRIES = [
   { code: "CA", flag: "🇨🇦", dial: "+1" },
 ];
 
+function resolveAddress(
+  sameAddressAs: "rep" | string | null,
+  repAddress: { street: string; city: string; state: string; zip: string },
+  allOwners: Owner[]
+): { street: string; city: string; state: string; zip: string } | null {
+  if (sameAddressAs === "rep") return repAddress;
+  if (sameAddressAs) {
+    const src = allOwners.find((o) => o.id === sameAddressAs);
+    if (!src) return null;
+    if (src.sameAddressAs === "rep") return repAddress;
+    return { street: src.addressStreet, city: src.addressCity, state: src.addressState, zip: src.addressZip };
+  }
+  return null;
+}
+
+function OwnerCard({
+  owner,
+  onRemove,
+  repFirstName,
+  repLastName,
+  repAddress,
+  allOwners,
+}: {
+  owner: Owner;
+  onRemove: () => void;
+  repFirstName: string;
+  repLastName: string;
+  repAddress: { street: string; city: string; state: string; zip: string };
+  allOwners: Owner[];
+}) {
+  let addressLabel: string;
+  if (owner.sameAddressAs === "rep") {
+    addressLabel = `Same address as ${repFirstName} ${repLastName}`;
+  } else if (owner.sameAddressAs) {
+    const src = allOwners.find((o) => o.id === owner.sameAddressAs);
+    addressLabel = src ? `Same address as ${src.firstName} ${src.lastName}` : "Same address as another owner";
+  } else {
+    addressLabel = owner.addressStreet ? `${owner.addressStreet}, ${owner.addressCity}` : "No address entered";
+  }
+
+  return (
+    <div className="flex items-start justify-between p-3 rounded-lg border border-gray-200 bg-white">
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm font-semibold text-hs-obsidian">{owner.firstName} {owner.lastName}</span>
+        <span className="text-xs text-hs-text-subtle">{addressLabel}</span>
+      </div>
+      <button
+        onClick={onRemove}
+        className="text-xs text-hs-text-subtle hover:text-red-500 transition-colors flex-shrink-0 ml-4"
+      >
+        Remove
+      </button>
+    </div>
+  );
+}
+
+function AddOwnerForm({
+  onAdd,
+  onCancel,
+  repFirstName,
+  repLastName,
+  repAddress,
+  existingOwners,
+}: {
+  onAdd: (owner: Owner) => void;
+  onCancel: () => void;
+  repFirstName: string;
+  repLastName: string;
+  repAddress: { street: string; city: string; state: string; zip: string };
+  existingOwners: Owner[];
+}) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("US");
+  const [ssn, setSsn] = useState("");
+  const [showSsn, setShowSsn] = useState(false);
+  const [sameAddressAs, setSameAddressAs] = useState<"rep" | string | null>(null);
+  const [addressStreet, setAddressStreet] = useState("");
+  const [addressCity, setAddressCity] = useState("");
+  const [addressState, setAddressState] = useState("");
+  const [addressZip, setAddressZip] = useState("");
+
+  const resolved = resolveAddress(sameAddressAs, repAddress, existingOwners);
+  const effectiveAddress = resolved ?? { street: addressStreet, city: addressCity, state: addressState, zip: addressZip };
+  const addressLocked = resolved !== null;
+
+  const addressSources: { value: "rep" | string; label: string }[] = [
+    ...(repFirstName ? [{ value: "rep" as const, label: `${repFirstName} ${repLastName} (representative)` }] : []),
+    ...existingOwners.map((o) => ({ value: o.id, label: `${o.firstName} ${o.lastName}` })),
+  ];
+
+  const isValid =
+    firstName.trim().length > 0 &&
+    lastName.trim().length > 0 &&
+    dateOfBirth.length > 0 &&
+    ssn.trim().length >= 9 &&
+    (sameAddressAs !== null || addressStreet.trim().length > 0);
+
+  function handleAdd() {
+    const id = `owner-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+    onAdd({
+      id,
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      dateOfBirth,
+      phone: phone.trim(),
+      phoneCountryCode,
+      ssn: ssn.trim(),
+      sameAddressAs,
+      addressStreet: effectiveAddress.street,
+      addressCity: effectiveAddress.city,
+      addressState: effectiveAddress.state,
+      addressZip: effectiveAddress.zip,
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-5 p-4 rounded-xl border-2 border-[#4ABACD]/30 bg-[#f0fafb]">
+      <span className="text-sm font-semibold text-hs-obsidian">New owner</span>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-1.5">
+          <label className={labelClass}>Legal first name <span className="text-red-500">*</span></label>
+          <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" className={inputClass} />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className={labelClass}>Legal last name <span className="text-red-500">*</span></label>
+          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" className={inputClass} />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className={labelClass}>Email</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" className={inputClass} />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className={labelClass}>Date of birth <span className="text-red-500">*</span></label>
+        <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} className={inputClass} />
+      </div>
+
+      {/* Address */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <label className={labelClass}>Home address <span className="text-red-500">*</span></label>
+          {addressSources.length > 0 && (
+            <select
+              value={sameAddressAs ?? ""}
+              onChange={(e) => setSameAddressAs(e.target.value === "" ? null : e.target.value as "rep" | string)}
+              className="text-xs px-2 py-1 rounded-md border border-gray-200 bg-white text-hs-text-subtle focus:outline-none focus:border-[#4ABACD] transition-colors"
+            >
+              <option value="">Enter manually</option>
+              {addressSources.map((s) => (
+                <option key={s.value} value={s.value}>Same as {s.label}</option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {addressLocked ? (
+          <div className="flex flex-col gap-1.5">
+            <div className={inputDisabledClass}>{effectiveAddress.street}</div>
+            <div className="grid grid-cols-3 gap-2">
+              <div className={`${inputDisabledClass} col-span-1`}>{effectiveAddress.city}</div>
+              <div className={inputDisabledClass}>{effectiveAddress.state}</div>
+              <div className={inputDisabledClass}>{effectiveAddress.zip}</div>
+            </div>
+            <button
+              onClick={() => setSameAddressAs(null)}
+              className="text-xs text-[#0091AE] hover:underline self-start"
+            >
+              Edit address
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <input type="text" value={addressStreet} onChange={(e) => setAddressStreet(e.target.value)} placeholder="Street address" className={inputClass} />
+            <div className="grid grid-cols-3 gap-2">
+              <input type="text" value={addressCity} onChange={(e) => setAddressCity(e.target.value)} placeholder="City" className={`${inputClass} col-span-1`} />
+              <select
+                value={addressState}
+                onChange={(e) => setAddressState(e.target.value)}
+                className={`${inputClass} bg-white`}
+              >
+                <option value="">State</option>
+                {US_STATE_OPTIONS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+              <input type="text" value={addressZip} onChange={(e) => setAddressZip(e.target.value)} placeholder="ZIP" maxLength={10} className={inputClass} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Phone */}
+      <div className="flex flex-col gap-1.5">
+        <label className={labelClass}>Phone number</label>
+        <div className="flex gap-2">
+          <select
+            value={phoneCountryCode}
+            onChange={(e) => setPhoneCountryCode(e.target.value)}
+            className="px-3 py-3 rounded-lg border border-gray-200 bg-white text-sm text-hs-obsidian focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors flex-shrink-0"
+          >
+            {PHONE_COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>{c.flag} {c.dial}</option>
+            ))}
+          </select>
+          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 (555) 555-5555" className={inputClass} />
+        </div>
+      </div>
+
+      {/* SSN */}
+      <div className="flex flex-col gap-1.5">
+        <label className={labelClass}>Social Security number <span className="text-red-500">*</span></label>
+        <p className="text-xs text-hs-text-subtle">Used for identity verification only — encrypted and never stored in plain text</p>
+        <div className="relative">
+          <input
+            type={showSsn ? "text" : "password"}
+            value={ssn}
+            onChange={(e) => setSsn(e.target.value.replace(/\D/g, "").slice(0, 9))}
+            placeholder="000000000"
+            inputMode="numeric"
+            className={`${inputClass} pr-16`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowSsn(!showSsn)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors"
+          >
+            {showSsn ? "Hide" : "Show"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex gap-2 pt-1">
+        <button
+          onClick={handleAdd}
+          disabled={!isValid}
+          className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+            isValid ? "bg-[#4ABACD] text-white hover:bg-[#3aa8bb]" : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          Add owner
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-4 py-2.5 rounded-lg text-sm text-hs-text-subtle border border-gray-200 hover:border-gray-300 transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function BusinessRepresentative() {
   const navigate = useNavigate();
   const {
@@ -186,12 +449,23 @@ export default function BusinessRepresentative() {
     repPhone, setRepPhone,
     repPhoneCountryCode, setRepPhoneCountryCode,
     repSsnLast4, setRepSsnLast4,
+    repIsOwner, setRepIsOwner,
+    owners, setOwners,
     addInvite,
   } = useOnboarding();
 
   const [addressLine2, setAddressLine2] = useState("");
   const [isControl, setIsControl] = useState(false);
   const [showSsn, setShowSsn] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const [showAddOwnerForm, setShowAddOwnerForm] = useState(false);
+
+  const repAddress = {
+    street: repAddressStreet,
+    city: repAddressCity,
+    state: repAddressState,
+    zip: repAddressZip,
+  };
 
   function applyIdData(data: IdExtracted) {
     setRepFirstName(data.firstName);
@@ -203,10 +477,21 @@ export default function BusinessRepresentative() {
     setRepAddressZip(data.zip);
   }
 
-  const currentCountry = PHONE_COUNTRIES.find((c) => c.code === repPhoneCountryCode) ?? PHONE_COUNTRIES[0];
-  const [showInvite, setShowInvite] = useState(false);
+  function handleAddOwner(owner: Owner) {
+    setOwners([...owners, owner]);
+    setShowAddOwnerForm(false);
+  }
 
-  const isValid =
+  function handleRemoveOwner(id: string) {
+    setOwners(owners.filter((o) => o.id !== id));
+  }
+
+  const repName = [repFirstName, repLastName].filter(Boolean).join(" ");
+  const hasOwnership = repIsOwner || owners.length > 0;
+
+  const currentCountry = PHONE_COUNTRIES.find((c) => c.code === repPhoneCountryCode) ?? PHONE_COUNTRIES[0];
+
+  const isRepValid =
     repFirstName.trim().length > 0 &&
     repLastName.trim().length > 0 &&
     repEmail.trim().length > 0 &&
@@ -218,6 +503,8 @@ export default function BusinessRepresentative() {
     repAddressZip.trim().length >= 5 &&
     repPhone.trim().length > 0 &&
     repSsnLast4.trim().length >= 9;
+
+  const isValid = isRepValid && hasOwnership;
 
   const hasAny =
     repFirstName.trim().length > 0 ||
@@ -236,7 +523,7 @@ export default function BusinessRepresentative() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← Back to application
+          ← All sections
         </button>
         <button
           onClick={() => setShowInvite(true)}
@@ -246,7 +533,7 @@ export default function BusinessRepresentative() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite someone
+          Invite collaborator
         </button>
       </div>
 
@@ -255,10 +542,10 @@ export default function BusinessRepresentative() {
 
           <div className="flex flex-col gap-2">
             <h1 className="text-[32px] font-semibold text-hs-obsidian leading-tight">
-              Business representative
+              Representative & owners
             </h1>
             <p className="text-base text-hs-text-subtle">
-              You may complete this on behalf of the company even if you are not a 25% owner — you just need the details for anyone who owns 25% or more.
+              The representative is the person legally responsible for this account. Owners are anyone with 25% or more stake in the business.
             </p>
           </div>
 
@@ -273,7 +560,7 @@ export default function BusinessRepresentative() {
 
           {/* Identity */}
           <div className="flex flex-col gap-5">
-            <SectionHeading title="Identity" subtitle="Must match government-issued ID" />
+            <SectionHeading title="Representative identity" subtitle="Must match government-issued ID" />
 
             <div className="flex flex-col gap-1.5">
               <label className={labelClass}>Legal first name <span className="text-red-500">*</span></label>
@@ -392,7 +679,7 @@ export default function BusinessRepresentative() {
             </div>
           </div>
 
-          {/* Contact & identity verification */}
+          {/* Contact & verification */}
           <div className="flex flex-col gap-5">
             <SectionHeading title="Contact & verification" />
 
@@ -444,6 +731,83 @@ export default function BusinessRepresentative() {
             </div>
           </div>
 
+          {/* Owners section */}
+          <div className="flex flex-col gap-5">
+            <SectionHeading title="Owners" subtitle="Anyone who owns 25% or more of the business" />
+
+            {/* Rep-as-owner toggle */}
+            {repFirstName && (
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={repIsOwner}
+                  onChange={(e) => setRepIsOwner(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-[#4ABACD] focus:ring-[#4ABACD] cursor-pointer"
+                />
+                <span className="text-sm text-hs-obsidian">
+                  {repName} (representative) is also a 25%+ owner
+                </span>
+              </label>
+            )}
+
+            {/* Rep owner card */}
+            {repIsOwner && repFirstName && (
+              <div className="flex items-center gap-3 p-3 rounded-lg border border-[#4ABACD]/30 bg-[#f0fafb]">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0 text-[#4ABACD]">
+                  <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-sm font-semibold text-hs-obsidian">{repName}</span>
+                  <span className="text-xs text-[#4ABACD]">Same details as representative</span>
+                </div>
+              </div>
+            )}
+
+            {/* Additional owner cards */}
+            {owners.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {owners.map((owner) => (
+                  <OwnerCard
+                    key={owner.id}
+                    owner={owner}
+                    onRemove={() => handleRemoveOwner(owner.id)}
+                    repFirstName={repFirstName}
+                    repLastName={repLastName}
+                    repAddress={repAddress}
+                    allOwners={owners}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Add owner form */}
+            {showAddOwnerForm ? (
+              <AddOwnerForm
+                onAdd={handleAddOwner}
+                onCancel={() => setShowAddOwnerForm(false)}
+                repFirstName={repFirstName}
+                repLastName={repLastName}
+                repAddress={repAddress}
+                existingOwners={owners}
+              />
+            ) : (
+              <button
+                onClick={() => setShowAddOwnerForm(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg border-2 border-dashed border-gray-200 text-sm text-hs-text-subtle hover:border-[#4ABACD] hover:text-[#4ABACD] transition-colors self-start"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                Add {hasOwnership ? "another" : "an"} owner
+              </button>
+            )}
+
+            {!hasOwnership && !showAddOwnerForm && (
+              <p className="text-xs text-amber-600">At least one owner is required to complete this section.</p>
+            )}
+          </div>
+
           {/* Save */}
           <div className="pb-10 flex flex-col gap-2">
             <button
@@ -456,7 +820,7 @@ export default function BusinessRepresentative() {
                     : "bg-gray-100 text-gray-500 hover:bg-gray-200"
               }`}
             >
-              {isValid ? "Save & return to application" : hasAny ? "Save progress" : "Return to application"}
+              {isValid ? "Save & return" : hasAny ? "Save progress" : "Return to application"}
             </button>
             {hasAny && !isValid && (
               <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
@@ -468,7 +832,7 @@ export default function BusinessRepresentative() {
 
       {showInvite && (
         <InviteModal
-          sectionTitle="Business representative"
+          sectionTitle="Representative & owners"
           onClose={() => setShowInvite(false)}
           onSend={addInvite}
         />

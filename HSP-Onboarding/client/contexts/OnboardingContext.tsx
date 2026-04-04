@@ -23,6 +23,23 @@ export type BusinessStructureOption =
   | "private-corporation"
   | "other";
 
+export interface Owner {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dateOfBirth: string;
+  phone: string;
+  phoneCountryCode: string;
+  ssn: string;
+  addressStreet: string;
+  addressCity: string;
+  addressState: string;
+  addressZip: string;
+  /** "rep" = same address as the representative, an owner id = same as that owner, null = manually entered */
+  sameAddressAs: "rep" | string | null;
+}
+
 export interface OnboardingState {
   country: string;
   email: string;
@@ -78,27 +95,10 @@ export interface OnboardingState {
   repPhoneCountryCode: string;
   /** Last 4 digits of SSN - stored, displayed masked as **** */
   repSsnLast4: string;
-  /** Owner first name */
-  ownerFirstName: string;
-  /** Owner last name */
-  ownerLastName: string;
-  /** Owner email */
-  ownerEmail: string;
-  /** Owner job title */
-  ownerJobTitle: string;
-  /** Owner date of birth */
-  ownerDateOfBirth: string;
-  /** Owner home address */
-  ownerAddressStreet: string;
-  ownerAddressCity: string;
-  ownerAddressState: string;
-  ownerAddressZip: string;
-  ownerAddressCountry: string;
-  /** Owner phone */
-  ownerPhone: string;
-  ownerPhoneCountryCode: string;
-  /** Owner last 4 digits of SSN - stored, displayed masked as **** */
-  ownerSsnLast4: string;
+  /** Whether the representative is also a 25%+ owner */
+  repIsOwner: boolean;
+  /** Additional owners (25%+ stake) beyond the representative if repIsOwner is true */
+  owners: Owner[];
   /** Sent invites */
   invites: InviteRecord[];
 }
@@ -145,19 +145,8 @@ interface OnboardingContextValue extends OnboardingState {
   setRepPhone: (v: string) => void;
   setRepPhoneCountryCode: (v: string) => void;
   setRepSsnLast4: (v: string) => void;
-  setOwnerFirstName: (v: string) => void;
-  setOwnerLastName: (v: string) => void;
-  setOwnerEmail: (v: string) => void;
-  setOwnerJobTitle: (v: string) => void;
-  setOwnerDateOfBirth: (v: string) => void;
-  setOwnerAddressStreet: (v: string) => void;
-  setOwnerAddressCity: (v: string) => void;
-  setOwnerAddressState: (v: string) => void;
-  setOwnerAddressZip: (v: string) => void;
-  setOwnerAddressCountry: (v: string) => void;
-  setOwnerPhone: (v: string) => void;
-  setOwnerPhoneCountryCode: (v: string) => void;
-  setOwnerSsnLast4: (v: string) => void;
+  setRepIsOwner: (v: boolean) => void;
+  setOwners: (owners: Owner[]) => void;
   addInvite: (email: string, sections: string[]) => void;
   revokeInvite: (id: string) => void;
 }
@@ -206,19 +195,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [repPhone, setRepPhone] = useState("");
   const [repPhoneCountryCode, setRepPhoneCountryCode] = useState("US");
   const [repSsnLast4, setRepSsnLast4] = useState("");
-  const [ownerFirstName, setOwnerFirstName] = useState("");
-  const [ownerLastName, setOwnerLastName] = useState("");
-  const [ownerEmail, setOwnerEmail] = useState("");
-  const [ownerJobTitle, setOwnerJobTitle] = useState("");
-  const [ownerDateOfBirth, setOwnerDateOfBirth] = useState("");
-  const [ownerAddressStreet, setOwnerAddressStreet] = useState("");
-  const [ownerAddressCity, setOwnerAddressCity] = useState("");
-  const [ownerAddressState, setOwnerAddressState] = useState("");
-  const [ownerAddressZip, setOwnerAddressZip] = useState("");
-  const [ownerAddressCountry, setOwnerAddressCountry] = useState("");
-  const [ownerPhone, setOwnerPhone] = useState("");
-  const [ownerPhoneCountryCode, setOwnerPhoneCountryCode] = useState("US");
-  const [ownerSsnLast4, setOwnerSsnLast4] = useState("");
+  const [repIsOwner, setRepIsOwner] = useState(false);
+  const [owners, setOwners] = useState<Owner[]>([]);
   const [invites, setInvites] = useState<InviteRecord[]>([]);
 
   const addInvite = (email: string, sections: string[]) => {
@@ -258,7 +236,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setBusinessWebsite("");
     setContactEmail("");
     setSupportEmail("");
-    setSupportPhone("");
     setSupportPhoneCountryCode("US");
     setTimeInBusiness("");
     setAverageTransactionAmount("");
@@ -278,19 +255,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     setRepPhone("");
     setRepPhoneCountryCode("US");
     setRepSsnLast4("");
-    setOwnerFirstName("");
-    setOwnerLastName("");
-    setOwnerEmail("");
-    setOwnerJobTitle("");
-    setOwnerDateOfBirth("");
-    setOwnerAddressStreet("");
-    setOwnerAddressCity("");
-    setOwnerAddressState("");
-    setOwnerAddressZip("");
-    setOwnerAddressCountry("");
-    setOwnerPhone("");
-    setOwnerPhoneCountryCode("US");
-    setOwnerSsnLast4("");
+    setRepIsOwner(false);
+    setOwners([]);
   };
 
   return (
@@ -375,32 +341,10 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         setRepPhoneCountryCode,
         repSsnLast4,
         setRepSsnLast4,
-        ownerFirstName,
-        setOwnerFirstName,
-        ownerLastName,
-        setOwnerLastName,
-        ownerEmail,
-        setOwnerEmail,
-        ownerJobTitle,
-        setOwnerJobTitle,
-        ownerDateOfBirth,
-        setOwnerDateOfBirth,
-        ownerAddressStreet,
-        setOwnerAddressStreet,
-        ownerAddressCity,
-        setOwnerAddressCity,
-        ownerAddressState,
-        setOwnerAddressState,
-        ownerAddressZip,
-        setOwnerAddressZip,
-        ownerAddressCountry,
-        setOwnerAddressCountry,
-        ownerPhone,
-        setOwnerPhone,
-        ownerPhoneCountryCode,
-        setOwnerPhoneCountryCode,
-        ownerSsnLast4,
-        setOwnerSsnLast4,
+        repIsOwner,
+        setRepIsOwner,
+        owners,
+        setOwners,
         invites,
         addInvite,
         revokeInvite,

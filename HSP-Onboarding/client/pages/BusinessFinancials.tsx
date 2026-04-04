@@ -363,7 +363,7 @@ export default function BusinessFinancials() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← Back to application
+          ← All sections
         </button>
         <button
           onClick={() => setShowDelegate(true)}

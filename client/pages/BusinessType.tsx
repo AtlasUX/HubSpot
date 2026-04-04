@@ -107,7 +107,7 @@ export default function BusinessType() {
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
       <div className="flex items-center px-8 pt-4">
         <button onClick={() => navigate("/dashboard")} className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors">
-          ← Back to application
+          ← All sections
         </button>
       </div>
 
@@ -168,8 +168,8 @@ export default function BusinessType() {
                             <span className="text-sm font-semibold text-hs-obsidian">{s.label}</span>
                             <span className="text-xs text-hs-text-subtle">{s.sub}</span>
                             {s.taxNote && (
-                              <span className={`text-xs mt-0.5 ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                                {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                              <span className={`text-xs mt-0.5 text-[#4ABACD]`}>
+                                {s.taxNoteWarning ? "ℹ " : "✓ "}{s.taxNote}
                               </span>
                             )}
                             {inferStructure(legalBusinessName) === s.value && legalBusinessName.trim().length > 0 && (

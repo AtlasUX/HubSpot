@@ -72,7 +72,7 @@ export default function ApplicationDashboard() {
     },
     {
       id: "contact",
-      title: "Contact & presence",
+      title: "Contact & support",
       description: "Website, business email, and customer support contact",
       path: "/business-details-op2",
       needs: ["Business website", "Business email & phone", "Support email & phone"],
@@ -166,7 +166,7 @@ export default function ApplicationDashboard() {
                     <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
                     <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
                   </svg>
-                  Invite someone
+                  Invite collaborator
                 </button>
                 <div className="text-right">
                   <div className="text-2xl font-semibold text-hs-obsidian">{completedCount}<span className="text-hs-text-subtle font-normal text-base"> / {sections.length}</span></div>
@@ -249,7 +249,7 @@ export default function ApplicationDashboard() {
                     <button
                       onClick={(e) => { e.stopPropagation(); setDelegating({ title: section.title, role: section.inviteRole }); }}
                       className="flex-shrink-0 mt-0.5 p-1.5 rounded-lg text-gray-300 hover:text-[#4ABACD] hover:bg-[#f0fafb] transition-colors"
-                      title={`Invite someone to complete ${section.title}`}
+                      title={`Invite collaborator to complete ${section.title}`}
                     >
                       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                         <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />

@@ -419,7 +419,7 @@ export default function BusinessInformation() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← Back to application
+          ← All sections
         </button>
         <button
           onClick={() => setShowInvite(true)}
@@ -429,7 +429,7 @@ export default function BusinessInformation() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite someone
+          Invite collaborator
         </button>
       </div>
 
@@ -468,8 +468,8 @@ export default function BusinessInformation() {
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                       <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
                       <span className="text-xs text-hs-text-subtle">{sub}</span>
-                      <span className={`text-xs ${taxWarn ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                        {taxWarn ? "⚠ " : "✓ "}{taxNote}
+                      <span className="text-xs text-[#4ABACD]">
+                        {taxWarn ? "ℹ " : "✓ "}{taxNote}
                       </span>
                     </div>
                     {selectedBusinessType === value && (
@@ -503,8 +503,8 @@ export default function BusinessInformation() {
                                 {isInferred && <span className="text-[10px] text-[#4ABACD] font-medium">✦ Matches</span>}
                               </div>
                               {s.taxNote && (
-                                <span className={`text-[10px] leading-tight ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                                  {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                                <span className="text-[10px] leading-tight text-[#4ABACD]">
+                                  {s.taxNoteWarning ? "ℹ " : "✓ "}{s.taxNote}
                                 </span>
                               )}
                             </button>
