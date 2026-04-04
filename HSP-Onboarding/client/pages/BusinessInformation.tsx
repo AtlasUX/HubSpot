@@ -8,6 +8,7 @@ export default function BusinessInformation() {
   const navigate = useNavigate();
   const {
     legalBusinessName, setLegalBusinessName,
+    doingBusinessAs, setDoingBusinessAs,
     industry, setIndustry,
     productsOrServices, setProductsOrServices,
   } = useOnboarding();
@@ -94,6 +95,25 @@ export default function BusinessInformation() {
               value={legalBusinessName}
               onChange={(e) => setLegalBusinessName(e.target.value)}
               placeholder="e.g. Acme Corporation LLC"
+              className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
+            />
+          </div>
+
+          {/* DBA */}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-hs-obsidian">
+                Doing business as (DBA)
+              </label>
+              <p className="text-xs text-hs-text-subtle">
+                The operating name customers see, if different from your legal name
+              </p>
+            </div>
+            <input
+              type="text"
+              value={doingBusinessAs}
+              onChange={(e) => setDoingBusinessAs(e.target.value)}
+              placeholder="e.g. Acme Consulting"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
             />
           </div>

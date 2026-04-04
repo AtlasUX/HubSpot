@@ -54,6 +54,8 @@ export default function BusinessDetailsOp2() {
     businessPhone, setBusinessPhone,
     supportEmail, setSupportEmail,
     supportPhone, setSupportPhone,
+    bankStatementDescription, setBankStatementDescription,
+    doingBusinessAs,
   } = useOnboarding();
 
   const isValid =
@@ -65,7 +67,9 @@ export default function BusinessDetailsOp2() {
     contactEmail.trim().length > 0 &&
     businessPhone.trim().length > 0 &&
     supportEmail.trim().length > 0 &&
-    supportPhone.trim().length > 0;
+    supportPhone.trim().length > 0 &&
+    bankStatementDescription.trim().length >= 5 &&
+    /[a-zA-Z]/.test(bankStatementDescription);
 
   return (
     <div className="flex flex-col h-screen bg-white">
@@ -234,6 +238,40 @@ export default function BusinessDetailsOp2() {
                 className={inputClass}
               />
             </Field>
+
+            <div className="flex flex-col gap-1.5">
+              <label className={labelClass}>
+                Bank statement description<span className="text-red-500 ml-0.5">*</span>
+              </label>
+              <p className={hintClass}>
+                This is what appears on your customers&rsquo; bank statements. Use 5–22 characters with at least 1 letter. No &lt; &gt; &quot; &apos; or * characters.
+              </p>
+              <input
+                type="text"
+                value={bankStatementDescription}
+                onChange={(e) => {
+                  const cleaned = e.target.value.replace(/[<>"'*]/g, "");
+                  if (cleaned.length <= 22) setBankStatementDescription(cleaned);
+                }}
+                placeholder={doingBusinessAs || "Your business name"}
+                maxLength={22}
+                className={inputClass}
+              />
+              <div className="flex justify-between">
+                <span className={`text-xs ${
+                  bankStatementDescription.length > 0 && bankStatementDescription.length < 5
+                    ? "text-red-500"
+                    : "text-hs-text-subtle"
+                }`}>
+                  {bankStatementDescription.length > 0 && bankStatementDescription.length < 5
+                    ? `${5 - bankStatementDescription.length} more characters needed`
+                    : "Customers will see this on their card statement"}
+                </span>
+                <span className="text-xs text-hs-text-subtle">
+                  {bankStatementDescription.length}/22
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Save */}
