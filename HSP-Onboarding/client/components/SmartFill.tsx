@@ -482,20 +482,23 @@ export default function SmartFill() {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="flex flex-col rounded-xl border border-gray-200 overflow-hidden">
+    <div className="flex flex-col rounded-xl border border-[#4ABACD]/40 overflow-hidden">
       <button
         onClick={() => setIsExpanded((v) => !v)}
-        className="flex items-center justify-between px-5 py-4 bg-white hover:bg-gray-50 transition-colors text-left w-full"
+        className="flex items-center justify-between px-5 py-4 bg-[#f0fafb] hover:bg-[#e8f5f8] transition-colors text-left w-full"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#141414] flex items-center justify-center flex-shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-[#4ABACD] flex items-center justify-center flex-shrink-0">
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-hs-obsidian">Auto-fill from documents & connections</p>
-            <p className="text-xs text-hs-text-subtle">Upload your IRS letter, link your bank, or pull from HubSpot CRM</p>
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-hs-obsidian">Fill your application faster</p>
+              <span className="text-[10px] font-semibold text-[#4ABACD] bg-[#4ABACD]/10 px-1.5 py-0.5 rounded-full uppercase tracking-wide">Recommended</span>
+            </div>
+            <p className="text-xs text-hs-text-subtle">Upload documents or connect accounts — we'll autofill fields across your entire application</p>
           </div>
         </div>
         <svg className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}

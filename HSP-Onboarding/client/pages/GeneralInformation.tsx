@@ -69,9 +69,13 @@ export default function GeneralInformation() {
           </div>
 
           <p className="text-sm text-hs-text-subtle text-center">
-            Live outside these countries?{" "}
+            Outside these countries?{" "}
             <a href="#" className="text-[#0091AE] underline hover:text-[#007a94]">
-              You can sign up for Stripe Payments
+              Sign up for Stripe Payments
+            </a>
+            {" "}or{" "}
+            <a href="#" className="text-[#0091AE] underline hover:text-[#007a94]">
+              connect an existing Stripe account
             </a>
           </p>
 
