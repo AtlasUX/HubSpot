@@ -211,9 +211,7 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   };
 
   const revokeInvite = (id: string) => {
-    setInvites((prev) =>
-      prev.map((inv) => (inv.id === id ? { ...inv, status: "revoked" } : inv))
-    );
+    setInvites((prev) => prev.filter((inv) => inv.id !== id));
   };
 
   const resetOnboarding = () => {

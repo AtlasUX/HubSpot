@@ -266,28 +266,19 @@ export default function ApplicationDashboard() {
                   return (
                     <div
                       key={inv.id}
-                      className={`flex items-start justify-between gap-4 px-5 py-4 rounded-xl border bg-white ${
-                        inv.status === "revoked" ? "opacity-50 border-gray-100" : "border-gray-200"
-                      }`}
+                      className="flex items-start justify-between gap-4 px-5 py-4 rounded-xl border border-gray-200 bg-white"
                     >
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-hs-obsidian truncate">{inv.email}</span>
-                          {inv.status === "revoked" && (
-                            <span className="text-xs text-gray-400 flex-shrink-0">· Revoked</span>
-                          )}
-                        </div>
+                        <span className="text-sm font-medium text-hs-obsidian truncate">{inv.email}</span>
                         <span className="text-xs text-hs-text-subtle">{sectionLabels}</span>
                         <span className="text-xs text-gray-400">Sent {sentDate}</span>
                       </div>
-                      {inv.status === "active" && (
-                        <button
-                          onClick={() => revokeInvite(inv.id)}
-                          className="flex-shrink-0 text-xs text-gray-400 hover:text-red-500 transition-colors mt-0.5"
-                        >
-                          Revoke
-                        </button>
-                      )}
+                      <button
+                        onClick={() => revokeInvite(inv.id)}
+                        className="flex-shrink-0 text-xs text-gray-400 hover:text-red-500 transition-colors mt-0.5"
+                      >
+                        Remove
+                      </button>
                     </div>
                   );
                 })}
