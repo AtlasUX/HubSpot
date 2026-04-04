@@ -172,7 +172,6 @@ function IrsDocumentUploadCard({
   const [extractedEntityType, setExtractedEntityType] = useState("");
   const [extractedName, setExtractedName] = useState("");
   const [structureMismatch, setStructureMismatch] = useState(false);
-  const [uploadExpanded, setUploadExpanded] = useState(false);
 
   const einValid = inputEin.replace(/\D/g, "").length === 9;
 
@@ -296,35 +295,6 @@ function IrsDocumentUploadCard({
         </div>
       </div>
 
-      <div className="border border-gray-100 rounded-xl overflow-hidden">
-        <button
-          type="button"
-          onClick={() => setUploadExpanded((v) => !v)}
-          className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" className="text-hs-text-subtle flex-shrink-0">
-              <rect x="2.5" y="1.5" width="10" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-              <path d="M5 5h5M5 8h5M5 11h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-            </svg>
-            <span className="text-sm text-hs-text-subtle">Upload IRS letter to auto-fill</span>
-            <span className="text-xs text-[#4ABACD] font-medium bg-[#4ABACD]/10 px-1.5 py-0.5 rounded">Optional</span>
-          </div>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className={`text-hs-text-subtle transition-transform duration-200 ${uploadExpanded ? "rotate-180" : ""}`}>
-            <path d="M3 5l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        {uploadExpanded && (
-          <div className="px-4 pb-4 flex flex-col gap-3 border-t border-gray-100">
-            <p className="text-xs text-hs-text-subtle pt-3">CP-575 or Letter 147C — auto-fills your EIN and confirms your legal entity type. Speeds up the review process.</p>
-            <label className="w-full py-2.5 bg-white border border-gray-200 text-hs-obsidian rounded-lg text-sm font-medium hover:border-[#4ABACD] hover:text-[#4ABACD] transition-colors cursor-pointer text-center block">
-              <input type="file" accept="image/*,.pdf" className="sr-only" onChange={handleUpload} />
-              Choose file or take a photo
-            </label>
-            <p className="text-xs text-hs-text-subtle"><span className="font-medium text-hs-obsidian">Need your letter?</span>{" "}Call the IRS at 800-829-4933 — takes ~10 min, faxed or mailed same day</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
