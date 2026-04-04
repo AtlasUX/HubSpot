@@ -83,7 +83,7 @@ export default function ApplicationDashboard() {
       id: "address",
       title: "Address & contact",
       description: "Where you operate and how customers reach you",
-      path: "/business-address-and-support",
+      path: "/business-details-op2",
       needs: ["Business address", "Support email", "Support phone number"],
       status: state.businessAddressStreet && state.businessAddressCity && state.supportEmail
         ? "complete"
