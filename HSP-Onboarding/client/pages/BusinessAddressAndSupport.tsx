@@ -428,7 +428,7 @@ This will be visible to your customers to help them contact your business with q
       <WizardFooter
         onBack={handleBack}
         onNext={handleNext}
-        nextDisabled={!isValid}
+        nextLabel={isValid ? "Save and continue" : "Save progress"}
       />
     </div>
   );

@@ -197,6 +197,22 @@ export default function BusinessType() {
             or talk to your accountant.
           </p>
 
+          <div className="w-full flex flex-col gap-2">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
+                pendingType
+                  ? "bg-[#4ABACD] text-white hover:bg-[#0091AE] hover:shadow-md"
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+              }`}
+            >
+              {pendingType ? "Save progress" : "Return to application"}
+            </button>
+            {pendingType && !businessStructure && (
+              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
+            )}
+          </div>
+
         </div>
       </div>
     </div>

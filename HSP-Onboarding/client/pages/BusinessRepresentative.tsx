@@ -218,6 +218,15 @@ export default function BusinessRepresentative() {
     repPhone.trim().length > 0 &&
     repSsnLast4.trim().length >= 9;
 
+  const hasAny =
+    repFirstName.trim().length > 0 ||
+    repLastName.trim().length > 0 ||
+    repEmail.trim().length > 0 ||
+    repDateOfBirth.length > 0 ||
+    repAddressStreet.trim().length > 0 ||
+    repPhone.trim().length > 0 ||
+    repSsnLast4.trim().length > 0;
+
   return (
     <div className="flex flex-col h-screen bg-white">
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
@@ -435,18 +444,22 @@ export default function BusinessRepresentative() {
           </div>
 
           {/* Save */}
-          <div className="pb-10">
+          <div className="pb-10 flex flex-col gap-2">
             <button
               onClick={() => navigate("/dashboard")}
-              disabled={!isValid}
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
                 isValid
                   ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : hasAny
+                    ? "bg-[#4ABACD] text-white hover:bg-[#0091AE] hover:shadow-md"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
               }`}
             >
-              Save & return to application
+              {isValid ? "Save & return to application" : hasAny ? "Save progress" : "Return to application"}
             </button>
+            {hasAny && !isValid && (
+              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
+            )}
           </div>
 
         </div>
