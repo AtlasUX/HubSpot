@@ -57,61 +57,42 @@ export default function ApplicationDashboard() {
 
   const sections: Section[] = [
     {
-      id: "structure",
-      title: "Business structure",
-      description: "How your business is legally set up",
-      path: "/business-type",
-      needs: ["Business type (LLC, Corp, sole prop…)"],
-      status: state.selectedBusinessType
-        ? (state.selectedBusinessType !== "company" || state.businessStructure ? "complete" : "in-progress")
-        : "not-started",
-      preview: state.selectedBusinessType
-        ? [
-            state.selectedBusinessType === "individual" ? "Sole / Individual" :
-            state.selectedBusinessType === "nonprofit" ? "Nonprofit" : null,
-            state.businessStructure
-              ? state.businessStructure.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-              : null,
-          ].filter(Boolean).join(" · ")
-        : undefined,
-      required: true,
-    },
-    {
-      id: "details",
-      title: "Business details",
-      description: "Legal name, industry, and what you sell",
+      id: "identity",
+      title: "Business identity",
+      description: "Structure, legal name, industry, products, and registered address",
       path: "/business-information",
-      needs: ["Legal business name", "Industry category", "Products or services description"],
-      status: state.legalBusinessName && state.industry ? "complete" : state.legalBusinessName || state.industry ? "in-progress" : "not-started",
+      needs: ["Business type", "Legal business name", "Industry", "Products / services", "Registered address"],
+      status: state.selectedBusinessType && state.legalBusinessName && state.industry && state.businessAddressStreet && state.businessAddressCity
+        ? "complete"
+        : state.selectedBusinessType || state.legalBusinessName || state.industry ? "in-progress"
+        : "not-started",
       preview: state.legalBusinessName || undefined,
       required: true,
     },
     {
-      id: "address",
-      title: "Address & contact",
-      description: "Where you operate and how customers reach you",
+      id: "contact",
+      title: "Contact & presence",
+      description: "Website, business email, and customer support contact",
       path: "/business-details-op2",
-      needs: ["Business address", "Support email", "Support phone number"],
-      status: state.businessAddressStreet && state.businessAddressCity && state.supportEmail
+      needs: ["Business website", "Business email & phone", "Support email & phone"],
+      status: state.businessWebsite && state.contactEmail && state.supportEmail && state.supportPhone
         ? "complete"
-        : state.businessAddressStreet || state.supportEmail ? "in-progress"
+        : state.businessWebsite || state.contactEmail ? "in-progress"
         : "not-started",
-      preview: state.businessAddressCity
-        ? `${state.businessAddressCity}${state.businessAddressState ? ", " + state.businessAddressState : ""}`
-        : undefined,
+      preview: state.businessWebsite || undefined,
       required: true,
     },
     {
       id: "financials",
-      title: "Financials",
-      description: "Revenue, transaction volumes, and tax ID",
+      title: "Tax & financials",
+      description: "EIN, revenue volumes, and bank statement descriptor",
       path: "/business-financials",
-      needs: ["Monthly revenue range", "Average transaction amount"],
-      status: state.timeInBusiness && state.monthlyTransactionVolume && state.averageTransactionAmount
+      needs: ["EIN (IRS letter)", "Time in business", "Transaction volumes", "Bank statement descriptor"],
+      status: state.ein && state.timeInBusiness && state.monthlyTransactionVolume && state.averageTransactionAmount && state.bankStatementDescription
         ? "complete"
-        : state.timeInBusiness || state.monthlyTransactionVolume ? "in-progress"
+        : state.ein || state.timeInBusiness || state.monthlyTransactionVolume ? "in-progress"
         : "not-started",
-      preview: state.monthlyTransactionVolume ? `${state.monthlyTransactionVolume} / month` : undefined,
+      preview: state.ein ? `EIN ···${state.ein.slice(-2)} verified` : undefined,
       required: true,
       inviteRole: "accountant or bookkeeper",
     },
