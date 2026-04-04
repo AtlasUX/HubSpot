@@ -405,18 +405,6 @@ export default function BusinessInformation() {
             </p>
           </div>
 
-          {/* Trust banner */}
-          <div className="flex gap-3 px-4 py-4 rounded-xl bg-[#f0fafb] border border-[#4ABACD]/20">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="flex-shrink-0 mt-0.5 text-[#4ABACD]">
-              <circle cx="9" cy="9" r="8" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M9 8v5M9 6h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm font-semibold text-hs-obsidian">Most applications are approved automatically in minutes</span>
-              <span className="text-sm text-hs-text-subtle">If we need anything else, our underwriting team will reach out within 1 business day of submission — no waiting around.</span>
-            </div>
-          </div>
-
           {/* Legal business name + inline Middesk verification */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
