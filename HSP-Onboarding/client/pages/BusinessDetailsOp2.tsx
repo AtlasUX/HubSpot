@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
@@ -41,6 +42,36 @@ function SectionHeading({ title, subtitle }: { title: string; subtitle: string }
   );
 }
 
+interface AddressSuggestion {
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
+const SIMULATED_ADDRESSES: AddressSuggestion[] = [
+  { street: "100 Main Street", city: "Austin", state: "TX", zip: "78701" },
+  { street: "100 Main Street Suite 200", city: "Denver", state: "CO", zip: "80203" },
+  { street: "1000 Market Street", city: "San Francisco", state: "CA", zip: "94102" },
+  { street: "1000 Market Street Floor 3", city: "Philadelphia", state: "PA", zip: "19107" },
+  { street: "10 Industrial Blvd", city: "Atlanta", state: "GA", zip: "30301" },
+  { street: "101 Commerce Drive", city: "Chicago", state: "IL", zip: "60601" },
+  { street: "250 Broadway", city: "New York", state: "NY", zip: "10007" },
+  { street: "2500 Technology Pkwy", city: "Seattle", state: "WA", zip: "98101" },
+  { street: "500 Oak Avenue", city: "Boston", state: "MA", zip: "02108" },
+  { street: "500 Oak Avenue Unit 4B", city: "Portland", state: "OR", zip: "97201" },
+];
+
+function getAddressSuggestions(query: string): AddressSuggestion[] {
+  const q = query.toLowerCase();
+  return SIMULATED_ADDRESSES
+    .filter((a) =>
+      a.street.toLowerCase().includes(q) ||
+      a.city.toLowerCase().includes(q)
+    )
+    .slice(0, 5);
+}
+
 export default function BusinessDetailsOp2() {
   const navigate = useNavigate();
   const {
@@ -57,6 +88,39 @@ export default function BusinessDetailsOp2() {
     bankStatementDescription, setBankStatementDescription,
     doingBusinessAs,
   } = useOnboarding();
+
+  const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [addressFocused, setAddressFocused] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (businessAddressStreet.length >= 3 && addressFocused) {
+      const results = getAddressSuggestions(businessAddressStreet);
+      setSuggestions(results);
+      setShowSuggestions(results.length > 0);
+    } else {
+      setShowSuggestions(false);
+    }
+  }, [businessAddressStreet, addressFocused]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function applyAddress(suggestion: AddressSuggestion) {
+    setBusinessAddressStreet(suggestion.street);
+    setBusinessAddressCity(suggestion.city);
+    setBusinessAddressState(suggestion.state);
+    setBusinessAddressZip(suggestion.zip);
+    setShowSuggestions(false);
+  }
 
   const isValid =
     businessAddressStreet.trim().length > 0 &&
@@ -103,13 +167,36 @@ export default function BusinessDetailsOp2() {
             />
 
             <Field label="Address line 1" required>
-              <input
-                type="text"
-                value={businessAddressStreet}
-                onChange={(e) => setBusinessAddressStreet(e.target.value)}
-                placeholder="Street address"
-                className={inputClass}
-              />
+              <div className="relative" ref={suggestionsRef}>
+                <input
+                  type="text"
+                  value={businessAddressStreet}
+                  onChange={(e) => setBusinessAddressStreet(e.target.value)}
+                  onFocus={() => setAddressFocused(true)}
+                  onBlur={() => setAddressFocused(false)}
+                  placeholder="Street address"
+                  className={inputClass}
+                  autoComplete="off"
+                />
+                {showSuggestions && (
+                  <div className="absolute z-20 w-full mt-1 bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onMouseDown={() => applyAddress(s)}
+                        className="flex flex-col w-full px-4 py-2.5 text-left hover:bg-[#f0fafb] transition-colors border-b border-gray-50 last:border-0"
+                      >
+                        <span className="text-sm text-hs-obsidian">{s.street}</span>
+                        <span className="text-xs text-hs-text-subtle">{s.city}, {s.state} {s.zip}</span>
+                      </button>
+                    ))}
+                    <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                      <span className="text-xs text-hs-text-subtle">Selecting will fill city, state, and ZIP</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             </Field>
 
             <Field label="Address line 2">

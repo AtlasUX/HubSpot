@@ -1,8 +1,40 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import { INDUSTRIES, getDescriptionRestriction, type Industry } from "@/data/industries";
+
+interface BusinessRegistryResult {
+  name: string;
+  state: string;
+  type: string;
+  status: string;
+}
+
+const SIMULATED_REGISTRY: BusinessRegistryResult[] = [
+  { name: "Acme Corporation LLC", state: "Delaware", type: "LLC", status: "Active" },
+  { name: "Acme Consulting Group Inc", state: "California", type: "Corporation", status: "Active" },
+  { name: "Acme Digital Solutions LLC", state: "Texas", type: "LLC", status: "Active" },
+  { name: "Atlas Creative Studio LLC", state: "New York", type: "LLC", status: "Active" },
+  { name: "Atlas Technologies Inc", state: "Delaware", type: "Corporation", status: "Active" },
+  { name: "Blue Ridge Services LLC", state: "Virginia", type: "LLC", status: "Active" },
+  { name: "Bright Path Consulting LLC", state: "Georgia", type: "LLC", status: "Active" },
+  { name: "Cedar Grove Industries Inc", state: "Ohio", type: "Corporation", status: "Active" },
+  { name: "Coastal Media Group LLC", state: "Florida", type: "LLC", status: "Active" },
+  { name: "Diamond Peak Solutions Inc", state: "Colorado", type: "Corporation", status: "Active" },
+  { name: "Elevate Marketing LLC", state: "California", type: "LLC", status: "Active" },
+  { name: "Frontier Tech Ventures LLC", state: "Texas", type: "LLC", status: "Active" },
+  { name: "Global Bridge Partners Inc", state: "New York", type: "Corporation", status: "Active" },
+  { name: "Harbor Digital LLC", state: "Washington", type: "LLC", status: "Active" },
+  { name: "Ironwood Creative LLC", state: "Illinois", type: "LLC", status: "Active" },
+];
+
+function getRegistryResults(query: string): BusinessRegistryResult[] {
+  const q = query.toLowerCase();
+  return SIMULATED_REGISTRY
+    .filter((b) => b.name.toLowerCase().includes(q))
+    .slice(0, 5);
+}
 
 export default function BusinessInformation() {
   const navigate = useNavigate();
@@ -14,6 +46,30 @@ export default function BusinessInformation() {
   } = useOnboarding();
 
   const [search, setSearch] = useState("");
+  const [registryResults, setRegistryResults] = useState<BusinessRegistryResult[]>([]);
+  const [showRegistry, setShowRegistry] = useState(false);
+  const [nameFocused, setNameFocused] = useState(false);
+  const registryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (legalBusinessName.length >= 3 && nameFocused) {
+      const results = getRegistryResults(legalBusinessName);
+      setRegistryResults(results);
+      setShowRegistry(results.length > 0);
+    } else {
+      setShowRegistry(false);
+    }
+  }, [legalBusinessName, nameFocused]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (registryRef.current && !registryRef.current.contains(e.target as Node)) {
+        setShowRegistry(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const selectedIndustry: Industry | null = INDUSTRIES.find((i) => i.value === industry) ?? null;
 
@@ -90,13 +146,42 @@ export default function BusinessInformation() {
                 The exact name on your government registration documents
               </p>
             </div>
-            <input
-              type="text"
-              value={legalBusinessName}
-              onChange={(e) => setLegalBusinessName(e.target.value)}
-              placeholder="e.g. Acme Corporation LLC"
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
-            />
+            <div className="relative" ref={registryRef}>
+              <input
+                type="text"
+                value={legalBusinessName}
+                onChange={(e) => setLegalBusinessName(e.target.value)}
+                onFocus={() => setNameFocused(true)}
+                onBlur={() => setNameFocused(false)}
+                placeholder="e.g. Acme Corporation LLC"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
+                autoComplete="off"
+              />
+              {showRegistry && (
+                <div className="absolute z-20 w-full mt-1 bg-white rounded-lg border border-gray-200 shadow-lg overflow-hidden">
+                  {registryResults.map((b, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onMouseDown={() => {
+                        setLegalBusinessName(b.name);
+                        setShowRegistry(false);
+                      }}
+                      className="flex items-center justify-between w-full px-4 py-2.5 text-left hover:bg-[#f0fafb] transition-colors border-b border-gray-50 last:border-0"
+                    >
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm text-hs-obsidian">{b.name}</span>
+                        <span className="text-xs text-hs-text-subtle">{b.state} · {b.type}</span>
+                      </div>
+                      <span className="text-xs text-[#4ABACD] font-medium ml-3 flex-shrink-0">{b.status}</span>
+                    </button>
+                  ))}
+                  <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                    <span className="text-xs text-hs-text-subtle">Results from public business registry</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* DBA */}
