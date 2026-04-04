@@ -54,6 +54,13 @@ export default function BusinessDetailsOp2() {
   } = useOnboarding();
   const [showInvite, setShowInvite] = useState(false);
 
+  const hasAny =
+    businessWebsite.trim().length > 0 ||
+    contactEmail.trim().length > 0 ||
+    businessPhone.trim().length > 0 ||
+    supportEmail.trim().length > 0 ||
+    supportPhone.trim().length > 0;
+
   const isValid =
     businessWebsite.trim().length > 0 &&
     contactEmail.trim().length > 0 &&
@@ -166,18 +173,22 @@ export default function BusinessDetailsOp2() {
           </div>
 
           {/* Save */}
-          <div className="pb-10">
+          <div className="flex flex-col gap-3 pb-10">
             <button
               onClick={() => navigate("/dashboard")}
-              disabled={!isValid}
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
                 isValid
                   ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : hasAny
+                  ? "bg-[#141414] text-white hover:bg-[#2d2d2d] opacity-80"
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200"
               }`}
             >
-              Save & return to application
+              {isValid ? "Save & return to application" : hasAny ? "Save progress" : "Return to application"}
             </button>
+            {hasAny && !isValid && (
+              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
+            )}
           </div>
 
         </div>

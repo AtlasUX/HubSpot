@@ -419,7 +419,7 @@ export default function BusinessInformation() {
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
-          ← All sections
+          ← Back to application
         </button>
         <button
           onClick={() => setShowInvite(true)}
@@ -429,7 +429,7 @@ export default function BusinessInformation() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite collaborator
+          Invite someone
         </button>
       </div>
 
@@ -468,8 +468,8 @@ export default function BusinessInformation() {
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                       <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
                       <span className="text-xs text-hs-text-subtle">{sub}</span>
-                      <span className="text-xs text-[#4ABACD]">
-                        {taxWarn ? "ℹ " : "✓ "}{taxNote}
+                      <span className={`text-xs ${taxWarn ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                        {taxWarn ? "⚠ " : "✓ "}{taxNote}
                       </span>
                     </div>
                     {selectedBusinessType === value && (
@@ -503,8 +503,8 @@ export default function BusinessInformation() {
                                 {isInferred && <span className="text-[10px] text-[#4ABACD] font-medium">✦ Matches</span>}
                               </div>
                               {s.taxNote && (
-                                <span className="text-[10px] leading-tight text-[#4ABACD]">
-                                  {s.taxNoteWarning ? "ℹ " : "✓ "}{s.taxNote}
+                                <span className={`text-[10px] leading-tight ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                                  {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
                                 </span>
                               )}
                             </button>
@@ -657,7 +657,7 @@ export default function BusinessInformation() {
                     <div className="flex flex-col gap-2">
                       <div className="flex flex-col gap-0.5">
                         <span className="text-sm font-semibold text-amber-700">
-                          Additional information required
+                          Requires prior approval — you can still apply
                         </span>
                         <span className="text-sm text-amber-600">
                           {selectedIndustry.restrictionReason} Our team will review and respond within 1 business day.
@@ -677,20 +677,6 @@ export default function BusinessInformation() {
                           <span className="text-xs text-amber-600 mt-0.5">Have these ready — underwriting may request them after submission.</span>
                         </div>
                       )}
-                      <div className="flex flex-col gap-0.5 pt-0.5 border-t border-amber-200 mt-0.5">
-                        <span className="text-xs text-amber-600">
-                          This business type falls under Stripe's{" "}
-                          <a
-                            href="https://stripe.com/legal/restricted-businesses"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline hover:text-amber-800"
-                          >
-                            restricted businesses
-                          </a>{" "}
-                          categories. Approval is not guaranteed and may require additional review beyond the documents listed above.
-                        </span>
-                      </div>
                     </div>
                   </div>
                 )}
@@ -747,7 +733,7 @@ export default function BusinessInformation() {
                             )}
                             {item.restriction === "restricted" && (
                               <span className="text-xs text-amber-500 font-medium ml-3 flex-shrink-0">
-                                Additional info required
+                                Needs approval
                               </span>
                             )}
                           </button>
