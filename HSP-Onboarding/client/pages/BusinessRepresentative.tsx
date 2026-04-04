@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import { US_STATE_OPTIONS } from "@shared/usStates";
+import { InviteModal } from "@/components/InviteModal";
 
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm";
@@ -202,6 +203,7 @@ export default function BusinessRepresentative() {
   }
 
   const currentCountry = PHONE_COUNTRIES.find((c) => c.code === repPhoneCountryCode) ?? PHONE_COUNTRIES[0];
+  const [showInvite, setShowInvite] = useState(false);
 
   const isValid =
     repFirstName.trim().length > 0 &&
@@ -219,12 +221,22 @@ export default function BusinessRepresentative() {
   return (
     <div className="flex flex-col h-screen bg-white">
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
-      <div className="flex items-center px-8 pt-4">
+      <div className="flex items-center justify-between px-8 pt-4">
         <button
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
           ← Back to application
+        </button>
+        <button
+          onClick={() => setShowInvite(true)}
+          className="flex items-center gap-1.5 text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+          Invite someone
         </button>
       </div>
 
@@ -439,6 +451,13 @@ export default function BusinessRepresentative() {
 
         </div>
       </div>
+
+      {showInvite && (
+        <InviteModal
+          sectionTitle="Business representative"
+          onClose={() => setShowInvite(false)}
+        />
+      )}
     </div>
   );
 }
