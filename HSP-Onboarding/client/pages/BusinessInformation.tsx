@@ -6,9 +6,9 @@ import { INDUSTRIES, getDescriptionRestriction, type Industry } from "@/data/ind
 import { InviteModal } from "@/components/InviteModal";
 
 const BUSINESS_TYPES = [
-  { value: "individual" as const, label: "Individual", sub: "Freelancer, sole prop, or single-member LLC", taxNote: "1099K & taxes under your SSN", taxWarn: true, emoji: "👤" },
-  { value: "company" as const, label: "Registered business", sub: "Multi-member LLC, corporation, or partnership", taxNote: "1099K & taxes under your EIN", taxWarn: false, emoji: "🏢" },
-  { value: "nonprofit" as const, label: "Nonprofit", sub: "Registered charity or foundation", taxNote: "Tax-exempt entity", taxWarn: false, emoji: "💙" },
+  { value: "individual" as const, label: "Individual", sub: "Freelancer, sole prop, or single-member LLC", taxNote: "1099K & taxes under your SSN", icon: "person" },
+  { value: "company" as const, label: "Registered business", sub: "Multi-member LLC, corporation, or partnership", taxNote: "1099K & taxes under your EIN", icon: "corporate_fare" },
+  { value: "nonprofit" as const, label: "Nonprofit", sub: "Registered charity or foundation", taxNote: "Tax-exempt entity", icon: "volunteer_activism" },
 ];
 
 const STRUCTURES: { value: BusinessStructureOption; label: string; sub: string; taxNote?: string; taxNoteWarning?: boolean }[] = [
@@ -450,7 +450,7 @@ export default function BusinessInformation() {
             <label className="text-sm font-semibold text-hs-obsidian">Business type <span className="text-red-500">*</span></label>
 
             <div className="flex flex-col gap-2">
-              {BUSINESS_TYPES.map(({ value, label, sub, taxNote, taxWarn, emoji }) => (
+              {BUSINESS_TYPES.map(({ value, label, sub, taxNote, icon }) => (
                 <div key={value}>
                   <button
                     onClick={() => {
@@ -464,19 +464,14 @@ export default function BusinessInformation() {
                         : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
                       }`}
                   >
-                    <span className="text-xl flex-shrink-0">{emoji}</span>
+                    <span className="material-symbols-sharp text-hs-text-subtle flex-shrink-0" style={{ fontSize: 22 }}>{icon}</span>
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
                       <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
                       <span className="text-xs text-hs-text-subtle">{sub}</span>
-                      <span className={`text-xs ${taxWarn ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                        {taxWarn ? "⚠ " : "✓ "}{taxNote}
-                      </span>
+                      <span className="text-sm text-hs-text-subtle mt-0.5">{taxNote}</span>
                     </div>
                     {selectedBusinessType === value && (
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#4ABACD] flex-shrink-0">
-                        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-                        <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      <span className="material-symbols-sharp text-[#4ABACD] flex-shrink-0" style={{ fontSize: 20 }}>check_circle</span>
                     )}
                   </button>
 
@@ -503,8 +498,8 @@ export default function BusinessInformation() {
                                 {isInferred && <span className="text-[10px] text-[#4ABACD] font-medium">✦ Matches</span>}
                               </div>
                               {s.taxNote && (
-                                <span className={`text-[10px] leading-tight ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                                  {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                                <span className="text-xs text-hs-text-subtle leading-tight">
+                                  {s.taxNote}
                                 </span>
                               )}
                             </button>
