@@ -6,9 +6,9 @@ import { INDUSTRIES, getDescriptionRestriction, type Industry } from "@/data/ind
 import { InviteModal } from "@/components/InviteModal";
 
 const BUSINESS_TYPES = [
-  { value: "individual" as const, label: "Just me", sub: "Sole proprietor, freelancer, or contractor", emoji: "👤" },
-  { value: "company" as const, label: "Registered business", sub: "LLC, corporation, or partnership", emoji: "🏢" },
-  { value: "nonprofit" as const, label: "Nonprofit", sub: "Registered charity or foundation", emoji: "💙" },
+  { value: "individual" as const, label: "Individual", sub: "Freelancer, sole prop, or single-member LLC", taxNote: "1099K & taxes under your SSN", taxWarn: true, emoji: "👤" },
+  { value: "company" as const, label: "Registered business", sub: "Multi-member LLC, corporation, or partnership", taxNote: "1099K & taxes under your EIN", taxWarn: false, emoji: "🏢" },
+  { value: "nonprofit" as const, label: "Nonprofit", sub: "Registered charity or foundation", taxNote: "Tax-exempt entity", taxWarn: false, emoji: "💙" },
 ];
 
 const STRUCTURES: { value: BusinessStructureOption; label: string; sub: string; taxNote?: string; taxNoteWarning?: boolean }[] = [
@@ -449,9 +449,8 @@ export default function BusinessInformation() {
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold text-hs-obsidian">Business type <span className="text-red-500">*</span></label>
 
-            {/* 3-column compact type selector */}
-            <div className="grid grid-cols-3 gap-2">
-              {BUSINESS_TYPES.map(({ value, label, emoji }) => (
+            <div className="flex flex-col gap-2">
+              {BUSINESS_TYPES.map(({ value, label, sub, taxNote, taxWarn, emoji }) => (
                 <button
                   key={value}
                   onClick={() => {
@@ -459,14 +458,26 @@ export default function BusinessInformation() {
                     setHasConfirmedBusinessType(value !== "company");
                     if (value !== "company") setBusinessStructure(null);
                   }}
-                  className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 text-center transition-all duration-150 active:scale-[0.98]
+                  className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 text-left transition-all duration-150 active:scale-[0.99]
                     ${selectedBusinessType === value
                       ? "border-[#4ABACD] bg-[#f0fafb]"
                       : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
                     }`}
                 >
-                  <span className="text-xl">{emoji}</span>
-                  <span className={`text-xs font-semibold leading-tight ${selectedBusinessType === value ? "text-[#0091AE]" : "text-hs-obsidian"}`}>{label}</span>
+                  <span className="text-xl flex-shrink-0">{emoji}</span>
+                  <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
+                    <span className="text-xs text-hs-text-subtle">{sub}</span>
+                    <span className={`text-xs ${taxWarn ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                      {taxWarn ? "⚠ " : "✓ "}{taxNote}
+                    </span>
+                  </div>
+                  {selectedBusinessType === value && (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#4ABACD] flex-shrink-0">
+                      <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
                 </button>
               ))}
             </div>
