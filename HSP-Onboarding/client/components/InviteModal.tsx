@@ -65,7 +65,7 @@ export function InviteModal({ sectionTitle, onClose }: { sectionTitle: string; o
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="px-8 pt-6 pb-4 border-b border-gray-100">
-          <h2 className="text-base font-semibold text-hs-obsidian">Invite someone to help</h2>
+          <h2 className="text-base font-semibold text-hs-obsidian">Invite collaborator</h2>
           <p className="text-sm text-hs-text-subtle mt-0.5">They'll get a secure link to fill out only the sections you choose.</p>
         </div>
 
@@ -108,19 +108,27 @@ export function InviteModal({ sectionTitle, onClose }: { sectionTitle: string; o
               />
             </div>
 
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="text-sm font-semibold text-hs-obsidian">Sections they can fill out</label>
-              <div className="grid grid-cols-2 gap-1">
+              <div className="flex flex-wrap gap-1.5">
                 {ALL_SECTIONS.map((s) => (
-                  <label key={s.id} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={selectedSections.includes(s.id)}
-                      onChange={() => toggleSection(s.id)}
-                      className="w-4 h-4 rounded border-gray-300 text-[#4ABACD] focus:ring-[#4ABACD]"
-                    />
-                    <span className="text-sm text-hs-obsidian leading-tight">{s.title}</span>
-                  </label>
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => toggleSection(s.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                      selectedSections.includes(s.id)
+                        ? "border-[#4ABACD] bg-[#f0fafb] text-[#0091AE]"
+                        : "border-gray-200 text-hs-text-subtle hover:border-gray-300 hover:text-hs-obsidian"
+                    }`}
+                  >
+                    {selectedSections.includes(s.id) && (
+                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 6L4.5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                    {s.title}
+                  </button>
                 ))}
               </div>
             </div>

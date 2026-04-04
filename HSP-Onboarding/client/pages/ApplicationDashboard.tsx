@@ -69,6 +69,7 @@ export default function ApplicationDashboard() {
         : "not-started",
       preview: state.legalBusinessName || undefined,
       required: true,
+      inviteRole: "team member",
     },
     {
       id: "contact",
@@ -82,6 +83,7 @@ export default function ApplicationDashboard() {
         : "not-started",
       preview: state.businessWebsite || undefined,
       required: true,
+      inviteRole: "team member",
     },
     {
       id: "financials",
@@ -166,7 +168,7 @@ export default function ApplicationDashboard() {
                     <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
                     <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
                   </svg>
-                  Invite someone
+                  Invite collaborator
                 </button>
                 <div className="text-right">
                   <div className="text-2xl font-semibold text-hs-obsidian">{completedCount}<span className="text-hs-text-subtle font-normal text-base"> / {sections.length}</span></div>
@@ -211,10 +213,22 @@ export default function ApplicationDashboard() {
                   <div className="flex flex-col gap-1.5 flex-1 min-w-0 cursor-pointer" onClick={() => navigate(section.path)}>
                     <div className="flex items-center justify-between gap-4">
                       <span className="font-semibold text-hs-obsidian">{section.title}</span>
-                      <span className={`text-sm flex-shrink-0 transition-colors ${
-                        isComplete ? "text-[#4ABACD]" : isInProgress ? "text-[#4ABACD]" : "text-gray-400 group-hover:text-[#4ABACD]"}`}>
-                        {isComplete ? "Edit →" : isInProgress ? "Continue →" : "Start →"}
-                      </span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setDelegating({ title: section.title, role: section.inviteRole }); }}
+                          className="p-1 rounded-md text-gray-300 hover:text-[#4ABACD] hover:bg-[#f0fafb] transition-colors"
+                          title={`Invite collaborator for ${section.title}`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                            <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
+                            <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                          </svg>
+                        </button>
+                        <span className={`text-sm transition-colors ${
+                          isComplete ? "text-[#4ABACD]" : isInProgress ? "text-[#4ABACD]" : "text-gray-400 group-hover:text-[#4ABACD]"}`}>
+                          {isComplete ? "Edit →" : isInProgress ? "Continue →" : "Start →"}
+                        </span>
+                      </div>
                     </div>
 
                     <span className="text-sm text-hs-text-subtle">{section.description}</span>
@@ -244,19 +258,6 @@ export default function ApplicationDashboard() {
                       </div>
                     )}
                   </div>
-
-                  {section.inviteRole && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setDelegating({ title: section.title, role: section.inviteRole }); }}
-                      className="flex-shrink-0 mt-0.5 p-1.5 rounded-lg text-gray-300 hover:text-[#4ABACD] hover:bg-[#f0fafb] transition-colors"
-                      title={`Invite someone to complete ${section.title}`}
-                    >
-                      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                        <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
-                        <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                      </svg>
-                    </button>
-                  )}
                 </div>
               );
             })}
