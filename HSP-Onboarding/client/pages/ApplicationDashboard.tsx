@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
 import SmartFill from "@/components/SmartFill";
-import { InviteModal } from "@/components/InviteModal";
+import { InviteModal, ALL_SECTIONS } from "@/components/InviteModal";
 
 const COUNTRY_NAMES: Record<string, { label: string; flag: string }> = {
   US: { label: "United States", flag: "🇺🇸" },
@@ -51,9 +51,10 @@ function StatusDot({ status }: { status: SectionStatus }) {
 export default function ApplicationDashboard() {
   const navigate = useNavigate();
   const state = useOnboarding();
+  const { invites, addInvite, revokeInvite } = state;
   const countryInfo = COUNTRY_NAMES[state.country] ?? { label: state.country, flag: "🌐" };
-
   const [delegating, setDelegating] = useState<{ title: string; role?: string } | null>(null);
+  const [showGlobalInvite, setShowGlobalInvite] = useState(false);
 
   const sections: Section[] = [
     {
@@ -156,9 +157,21 @@ export default function ApplicationDashboard() {
                   HubSpot Payments Application
                 </h1>
               </div>
-              <div className="text-right flex-shrink-0">
-                <div className="text-2xl font-semibold text-hs-obsidian">{completedCount}<span className="text-hs-text-subtle font-normal text-base"> / {sections.length}</span></div>
-                <div className="text-xs text-hs-text-subtle">sections complete</div>
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <button
+                  onClick={() => setShowGlobalInvite(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-hs-text-subtle hover:border-[#4ABACD] hover:text-[#4ABACD] transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+                    <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
+                    <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                  </svg>
+                  Invite someone
+                </button>
+                <div className="text-right">
+                  <div className="text-2xl font-semibold text-hs-obsidian">{completedCount}<span className="text-hs-text-subtle font-normal text-base"> / {sections.length}</span></div>
+                  <div className="text-xs text-hs-text-subtle">sections complete</div>
+                </div>
               </div>
             </div>
 
@@ -249,6 +262,52 @@ export default function ApplicationDashboard() {
             })}
           </div>
 
+          {/* Invite history */}
+          {invites.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <h2 className="text-sm font-semibold text-hs-obsidian">Invites sent</h2>
+              <div className="flex flex-col gap-2">
+                {invites.map((inv) => {
+                  const sectionLabels = inv.sections
+                    .map((id) => ALL_SECTIONS.find((s) => s.id === id)?.title ?? id)
+                    .join(", ");
+                  const sentDate = new Date(inv.sentAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  });
+                  return (
+                    <div
+                      key={inv.id}
+                      className={`flex items-start justify-between gap-4 px-5 py-4 rounded-xl border bg-white ${
+                        inv.status === "revoked" ? "opacity-50 border-gray-100" : "border-gray-200"
+                      }`}
+                    >
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-hs-obsidian truncate">{inv.email}</span>
+                          {inv.status === "revoked" && (
+                            <span className="text-xs text-gray-400 flex-shrink-0">· Revoked</span>
+                          )}
+                        </div>
+                        <span className="text-xs text-hs-text-subtle">{sectionLabels}</span>
+                        <span className="text-xs text-gray-400">Sent {sentDate}</span>
+                      </div>
+                      {inv.status === "active" && (
+                        <button
+                          onClick={() => revokeInvite(inv.id)}
+                          className="flex-shrink-0 text-xs text-gray-400 hover:text-red-500 transition-colors mt-0.5"
+                        >
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Submit */}
           <div className="flex flex-col items-center gap-3 pt-2">
             <button
@@ -276,6 +335,14 @@ export default function ApplicationDashboard() {
         <InviteModal
           sectionTitle={delegating.title}
           onClose={() => setDelegating(null)}
+          onSend={addInvite}
+        />
+      )}
+      {showGlobalInvite && (
+        <InviteModal
+          sectionTitle="Business identity"
+          onClose={() => setShowGlobalInvite(false)}
+          onSend={addInvite}
         />
       )}
     </div>

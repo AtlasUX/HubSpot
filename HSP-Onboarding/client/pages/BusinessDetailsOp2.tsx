@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
+import { InviteModal } from "@/components/InviteModal";
 
 const inputClass =
   "w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm";
@@ -49,7 +50,9 @@ export default function BusinessDetailsOp2() {
     businessPhone, setBusinessPhone,
     supportEmail, setSupportEmail,
     supportPhone, setSupportPhone,
+    addInvite,
   } = useOnboarding();
+  const [showInvite, setShowInvite] = useState(false);
 
   const isValid =
     businessWebsite.trim().length > 0 &&
@@ -61,12 +64,22 @@ export default function BusinessDetailsOp2() {
   return (
     <div className="flex flex-col h-screen bg-white">
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
-      <div className="flex items-center px-8 pt-4">
+      <div className="flex items-center justify-between px-8 pt-4">
         <button
           onClick={() => navigate("/dashboard")}
           className="text-sm text-hs-text-subtle hover:text-[#0091AE] transition-colors"
         >
           ← Back to application
+        </button>
+        <button
+          onClick={() => setShowInvite(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-hs-text-subtle hover:border-[#4ABACD] hover:text-[#4ABACD] transition-colors"
+        >
+          <svg width="14" height="14" viewBox="0 0 15 15" fill="none">
+            <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+          Invite someone
         </button>
       </div>
 
@@ -169,6 +182,13 @@ export default function BusinessDetailsOp2() {
 
         </div>
       </div>
+      {showInvite && (
+        <InviteModal
+          sectionTitle="Contact & presence"
+          onClose={() => setShowInvite(false)}
+          onSend={addInvite}
+        />
+      )}
     </div>
   );
 }
