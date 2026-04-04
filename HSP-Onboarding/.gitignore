@@ -1,3 +1,6 @@
+# Vercel (link to specific account - do not commit)
+.vercel/
+
 # Dependencies
 node_modules/
 
@@ -25,4 +28,11 @@ npm-debug.log*
 
 # Test / Coverage
 coverage/
+
+# Nested git repos (single repo at HubSpot level)
+HSP-Onboarding/.git
+HSP-Onboarding/.git.bak
+
+# Temp files
+git_status.txt
 .vercel

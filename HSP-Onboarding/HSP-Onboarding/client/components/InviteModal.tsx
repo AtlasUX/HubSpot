@@ -11,16 +11,16 @@ export const ALL_SECTIONS = [
 const MY_EMAIL = "singram@hubspot.com";
 
 function deriveSubject(sections: string[]): string {
-  if (sections.length === 0) return "Help requested — HubSpot Payments application";
+  if (sections.length === 0) return "Help requested — HubSpot Payments enrollment";
   if (sections.length === 1) {
     const title = ALL_SECTIONS.find((s) => s.id === sections[0])?.title ?? "";
-    return `Help requested: ${title} — HubSpot Payments`;
+    return `Help requested: ${title} — HubSpot Payments enrollment`;
   }
   if (sections.length === 2) {
     const titles = sections.map((id) => ALL_SECTIONS.find((s) => s.id === id)?.title ?? "");
-    return `Help requested: ${titles[0]} & ${titles[1]} — HubSpot Payments`;
+    return `Help requested: ${titles[0]} & ${titles[1]} — HubSpot Payments enrollment`;
   }
-  return `Help requested: ${sections.length} sections — HubSpot Payments`;
+  return `Help requested: ${sections.length} sections — HubSpot Payments enrollment`;
 }
 
 function deriveMessage(sections: string[]): string {
