@@ -417,7 +417,7 @@ export default function BusinessInformation() {
             </div>
           </div>
 
-          {/* Legal business name */}
+          {/* Legal business name + inline Middesk verification */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-hs-obsidian">
@@ -463,6 +463,13 @@ export default function BusinessInformation() {
                 </div>
               )}
             </div>
+            <MiddeskEinSection
+              ein={ein}
+              setEin={setEin}
+              businessName={legalBusinessName}
+              businessStructure={businessStructure}
+              legalBusinessName={legalBusinessName}
+            />
           </div>
 
           {/* DBA */}
@@ -481,25 +488,6 @@ export default function BusinessInformation() {
               onChange={(e) => setDoingBusinessAs(e.target.value)}
               placeholder="e.g. Acme Consulting"
               className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
-            />
-          </div>
-
-          {/* EIN */}
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-semibold text-hs-obsidian">
-                EIN (Employer Identification Number) <span className="text-red-500">*</span>
-              </label>
-              <p className="text-xs text-hs-text-subtle">
-                Required for tax reporting (1099-K) — must match your IRS records exactly
-              </p>
-            </div>
-            <MiddeskEinSection
-              ein={ein}
-              setEin={setEin}
-              businessName={legalBusinessName}
-              businessStructure={businessStructure}
-              legalBusinessName={legalBusinessName}
             />
           </div>
 
