@@ -136,6 +136,18 @@ export default function BusinessInformation() {
             </p>
           </div>
 
+          {/* Trust banner */}
+          <div className="flex gap-3 px-4 py-4 rounded-xl bg-[#f0fafb] border border-[#4ABACD]/20">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="flex-shrink-0 mt-0.5 text-[#4ABACD]">
+              <circle cx="9" cy="9" r="8" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M9 8v5M9 6h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold text-hs-obsidian">Most applications are approved automatically in minutes</span>
+              <span className="text-sm text-hs-text-subtle">If we need anything else, our underwriting team will reach out within 1 business day of submission — no waiting around.</span>
+            </div>
+          </div>
+
           {/* Legal business name */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
@@ -263,15 +275,31 @@ export default function BusinessInformation() {
                 )}
 
                 {selectedIndustry.restriction === "restricted" && (
-                  <div className="flex gap-3 px-4 py-3 rounded-lg bg-amber-50 border border-amber-200">
-                    <span className="text-amber-500 flex-shrink-0">⚠</span>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm font-semibold text-amber-700">
-                        Requires prior approval
-                      </span>
-                      <span className="text-sm text-amber-600">
-                        {selectedIndustry.restrictionReason}
-                      </span>
+                  <div className="flex gap-3 px-4 py-4 rounded-lg bg-amber-50 border border-amber-200">
+                    <span className="text-amber-500 flex-shrink-0 mt-0.5">⚠</span>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-sm font-semibold text-amber-700">
+                          Requires prior approval — you can still apply
+                        </span>
+                        <span className="text-sm text-amber-600">
+                          {selectedIndustry.restrictionReason} Our team will review and respond within 1 business day.
+                        </span>
+                      </div>
+                      {selectedIndustry.approvalRequirements && selectedIndustry.approvalRequirements.length > 0 && (
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-xs font-semibold text-amber-700 uppercase tracking-wide">You'll need to provide:</span>
+                          <ul className="flex flex-col gap-1">
+                            {selectedIndustry.approvalRequirements.map((req) => (
+                              <li key={req} className="flex items-start gap-2 text-sm text-amber-700">
+                                <span className="flex-shrink-0 mt-0.5 w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                                {req}
+                              </li>
+                            ))}
+                          </ul>
+                          <span className="text-xs text-amber-600 mt-0.5">Have these ready — underwriting may request them after submission.</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

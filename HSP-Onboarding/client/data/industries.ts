@@ -7,6 +7,7 @@ export interface Industry {
   irsCode?: string;
   restriction: RestrictionStatus;
   restrictionReason?: string;
+  approvalRequirements?: string[];
 }
 
 export const INDUSTRIES: Industry[] = [
@@ -16,7 +17,7 @@ export const INDUSTRIES: Industry[] = [
   { value: "food-manufacturing", label: "Food & beverage manufacturing", group: "Agriculture & Food", irsCode: "311", restriction: null },
   { value: "restaurants", label: "Restaurants & food service", group: "Agriculture & Food", irsCode: "722", restriction: null },
   { value: "grocery-retail", label: "Grocery & specialty food retail", group: "Agriculture & Food", irsCode: "445", restriction: null },
-  { value: "alcohol-retail", label: "Alcohol & liquor retail", group: "Agriculture & Food", irsCode: "4453", restriction: "restricted", restrictionReason: "Alcohol sales require prior written approval and are subject to additional review." },
+  { value: "alcohol-retail", label: "Alcohol & liquor retail", group: "Agriculture & Food", irsCode: "4453", restriction: "restricted", restrictionReason: "Alcohol sales require prior written approval and are subject to additional review.", approvalRequirements: ["State alcohol retail license or permit", "Liquor license number", "Age verification policy (how you confirm buyers are 21+)"] },
   { value: "cannabis", label: "Cannabis & marijuana dispensary", group: "Agriculture & Food", irsCode: "4599", restriction: "prohibited", restrictionReason: "Cannabis and marijuana businesses, including dispensaries and related products, are prohibited from using HubSpot Payments regardless of local legality." },
 
   // Construction & Real Estate
@@ -53,9 +54,9 @@ export const INDUSTRIES: Industry[] = [
   { value: "physical-therapy", label: "Physical therapy & rehabilitation", group: "Healthcare", irsCode: "6213", restriction: null },
   { value: "veterinary", label: "Veterinary services", group: "Healthcare", irsCode: "5419", restriction: null },
   { value: "wellness-fitness", label: "Wellness, fitness & personal training", group: "Healthcare", irsCode: "7139", restriction: null },
-  { value: "pharmaceuticals", label: "Online pharmacy or prescription products", group: "Healthcare", irsCode: "4461", restriction: "restricted", restrictionReason: "Online pharmacies and prescription products require prior written approval and additional documentation." },
-  { value: "telemedicine", label: "Telemedicine & telehealth", group: "Healthcare", irsCode: "621", restriction: "restricted", restrictionReason: "Telemedicine services require prior written approval." },
-  { value: "supplements", label: "Vitamins, supplements & nutraceuticals", group: "Healthcare", irsCode: "4461", restriction: "restricted", restrictionReason: "Supplements and nutraceuticals making health claims require prior review and approval." },
+  { value: "pharmaceuticals", label: "Online pharmacy or prescription products", group: "Healthcare", irsCode: "4461", restriction: "restricted", restrictionReason: "Online pharmacies and prescription products require prior written approval and additional documentation.", approvalRequirements: ["State pharmacy license", "DEA registration number (if dispensing controlled substances)", "Prescription validation process documentation", "HIPAA compliance statement"] },
+  { value: "telemedicine", label: "Telemedicine & telehealth", group: "Healthcare", irsCode: "621", restriction: "restricted", restrictionReason: "Telemedicine services require prior written approval.", approvalRequirements: ["State medical license(s) for each state you operate in", "HIPAA compliance documentation", "Telehealth platform security overview"] },
+  { value: "supplements", label: "Vitamins, supplements & nutraceuticals", group: "Healthcare", irsCode: "4461", restriction: "restricted", restrictionReason: "Supplements and nutraceuticals making health claims require prior review and approval.", approvalRequirements: ["Third-party lab test results (Certificate of Analysis)", "List of health claims used in marketing", "FTC/FDA compliance statement", "Product ingredient list"] },
 
   // Retail
   { value: "general-retail", label: "General merchandise & retail", group: "Retail", irsCode: "452", restriction: null },
@@ -64,15 +65,15 @@ export const INDUSTRIES: Industry[] = [
   { value: "home-goods", label: "Home goods & furniture", group: "Retail", irsCode: "442", restriction: null },
   { value: "sporting-goods", label: "Sporting goods & hobbies", group: "Retail", irsCode: "451", restriction: null },
   { value: "auto-parts", label: "Auto parts & accessories", group: "Retail", irsCode: "4411", restriction: null },
-  { value: "firearms-retail", label: "Firearms & weapons (licensed dealer)", group: "Retail", irsCode: "4591", restriction: "restricted", restrictionReason: "Licensed firearms dealers require prior written approval from HubSpot." },
-  { value: "tobacco", label: "Tobacco, e-cigarettes & vaping products", group: "Retail", irsCode: "4599", restriction: "restricted", restrictionReason: "Tobacco and vaping products require prior written approval." },
-  { value: "cbd", label: "CBD & hemp products", group: "Retail", irsCode: "4599", restriction: "restricted", restrictionReason: "CBD products require prior written approval and must comply with local THC limits." },
+  { value: "firearms-retail", label: "Firearms & weapons (licensed dealer)", group: "Retail", irsCode: "4591", restriction: "restricted", restrictionReason: "Licensed firearms dealers require prior written approval from HubSpot.", approvalRequirements: ["Federal Firearms License (FFL) number", "State dealer license", "Age verification policy (how you confirm buyers are 21+)", "Copy of your FFL certificate"] },
+  { value: "tobacco", label: "Tobacco, e-cigarettes & vaping products", group: "Retail", irsCode: "4599", restriction: "restricted", restrictionReason: "Tobacco and vaping products require prior written approval.", approvalRequirements: ["State retail tobacco license", "Age verification policy", "List of products sold"] },
+  { value: "cbd", label: "CBD & hemp products", group: "Retail", irsCode: "4599", restriction: "restricted", restrictionReason: "CBD products require prior written approval and must comply with local THC limits.", approvalRequirements: ["Certificate of Analysis (COA) showing THC content <0.3%", "State hemp retailer license", "Lab test results for each product line", "Sourcing documentation (US-grown hemp)"] },
   { value: "adult-content", label: "Adult content or entertainment", group: "Retail", irsCode: "5129", restriction: "prohibited", restrictionReason: "Adult content, escort services, and related businesses are prohibited from using HubSpot Payments." },
 
   // Finance & Insurance
-  { value: "insurance", label: "Insurance services & brokerage", group: "Finance & Insurance", irsCode: "524", restriction: "restricted", restrictionReason: "Insurance businesses require prior written approval." },
-  { value: "investment", label: "Investment & financial advisory", group: "Finance & Insurance", irsCode: "523", restriction: "restricted", restrictionReason: "Investment and brokerage services require prior written approval." },
-  { value: "lending", label: "Lending & credit services", group: "Finance & Insurance", irsCode: "522", restriction: "restricted", restrictionReason: "Lending and credit services require prior written approval." },
+  { value: "insurance", label: "Insurance services & brokerage", group: "Finance & Insurance", irsCode: "524", restriction: "restricted", restrictionReason: "Insurance businesses require prior written approval.", approvalRequirements: ["State insurance license(s)", "National Producer Number (NPN)", "Lines of authority (health, life, P&C, etc.)", "E&O insurance documentation"] },
+  { value: "investment", label: "Investment & financial advisory", group: "Finance & Insurance", irsCode: "523", restriction: "restricted", restrictionReason: "Investment and brokerage services require prior written approval.", approvalRequirements: ["SEC or FINRA registration number", "State investment advisor license", "Form ADV (Part 1 or Part 2)", "Description of services and fee structure"] },
+  { value: "lending", label: "Lending & credit services", group: "Finance & Insurance", irsCode: "522", restriction: "restricted", restrictionReason: "Lending and credit services require prior written approval.", approvalRequirements: ["State lending license(s)", "NMLS ID number", "Truth in Lending Act compliance statement", "Description of loan products offered"] },
   { value: "money-transmission", label: "Money transmission or remittance", group: "Finance & Insurance", irsCode: "5223", restriction: "prohibited", restrictionReason: "Peer-to-peer money transmission and remittance services are prohibited." },
 
   // Arts, Media & Entertainment
@@ -82,7 +83,7 @@ export const INDUSTRIES: Industry[] = [
   { value: "event-planning", label: "Event planning & management", group: "Arts & Entertainment", irsCode: "7113", restriction: null },
   { value: "publishing", label: "Publishing, blogging & content creation", group: "Arts & Entertainment", irsCode: "511", restriction: null },
   { value: "gambling", label: "Gambling, casinos or sweepstakes", group: "Arts & Entertainment", irsCode: "713", restriction: "prohibited", restrictionReason: "Gambling, casino games, fantasy sports with prizes, lotteries, and sweepstakes are prohibited from using HubSpot Payments." },
-  { value: "dating-services", label: "Dating & matchmaking services", group: "Arts & Entertainment", irsCode: "8129", restriction: "restricted", restrictionReason: "Dating and matchmaking services require prior written approval." },
+  { value: "dating-services", label: "Dating & matchmaking services", group: "Arts & Entertainment", irsCode: "8129", restriction: "restricted", restrictionReason: "Dating and matchmaking services require prior written approval.", approvalRequirements: ["Age verification system documentation", "Content moderation policy", "Terms of service for users"] },
 
   // Education
   { value: "k12-education", label: "K-12 education & tutoring", group: "Education", irsCode: "611", restriction: null },
@@ -97,7 +98,7 @@ export const INDUSTRIES: Industry[] = [
   { value: "rideshare-taxi", label: "Rideshare & taxi services", group: "Transportation & Logistics", irsCode: "485", restriction: null },
   { value: "airline", label: "Commercial airline or charter flights", group: "Transportation & Logistics", irsCode: "481", restriction: "prohibited", restrictionReason: "Commercial and charter airline operations are prohibited from using HubSpot Payments." },
   { value: "cruise", label: "Cruise line operations", group: "Transportation & Logistics", irsCode: "483", restriction: "prohibited", restrictionReason: "Commercial cruise operations are prohibited from using HubSpot Payments." },
-  { value: "travel-agency", label: "Travel agency & booking services", group: "Transportation & Logistics", irsCode: "5615", restriction: "restricted", restrictionReason: "Travel reservation services require prior written approval due to elevated financial risk." },
+  { value: "travel-agency", label: "Travel agency & booking services", group: "Transportation & Logistics", irsCode: "5615", restriction: "restricted", restrictionReason: "Travel reservation services require prior written approval due to elevated financial risk.", approvalRequirements: ["IATA or ARC accreditation number (if applicable)", "Seller of Travel license (required in CA, FL, HI, WA)", "Refund and cancellation policy", "Chargeback dispute management process"] },
 
   // Personal & Home Services
   { value: "personal-care", label: "Personal care, salons & beauty services", group: "Personal & Home Services", irsCode: "8121", restriction: null },
