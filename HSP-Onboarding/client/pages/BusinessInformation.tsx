@@ -36,15 +36,26 @@ function getRegistryResults(query: string): BusinessRegistryResult[] {
     .slice(0, 5);
 }
 
-type IrsDocState = "idle" | "extracting" | "review" | "confirmed" | "manual";
+interface MiddeskResult {
+  legalName: string;
+  ein: string;
+  entityType: string;
+  formationState: string;
+  status: string;
+  address: string;
+}
 
-const ENTITY_TYPE_MAP: Record<string, string> = {
-  "sole-proprietorship": "Sole Proprietor",
-  "single-member-llc": "Limited Liability Company",
-  "multi-member-llc": "Limited Liability Company",
-  "private-partnership": "Partnership",
-  "private-corporation": "Corporation",
-};
+const MIDDESK_RECORDS: Array<{ test: (n: string) => boolean; result: MiddeskResult }> = [
+  { test: (n) => /acme/i.test(n), result: { legalName: "Acme Corporation LLC", ein: "47-2831094", entityType: "LLC", formationState: "Delaware", status: "Active", address: "1209 Orange St, Wilmington, DE 19801" } },
+  { test: (n) => /atlas/i.test(n), result: { legalName: "Atlas Technologies Inc", ein: "83-1927463", entityType: "Corporation", formationState: "New York", status: "Active", address: "100 Park Ave, New York, NY 10017" } },
+  { test: (n) => /blue ridge/i.test(n), result: { legalName: "Blue Ridge Services LLC", ein: "61-4823719", entityType: "LLC", formationState: "Virginia", status: "Active", address: "421 Main St, Roanoke, VA 24001" } },
+  { test: (n) => /harbor/i.test(n), result: { legalName: "Harbor Digital LLC", ein: "92-3847261", entityType: "LLC", formationState: "Washington", status: "Active", address: "1100 Eastlake Ave E, Seattle, WA 98109" } },
+  { test: (n) => /elevate/i.test(n), result: { legalName: "Elevate Marketing LLC", ein: "46-2937481", entityType: "LLC", formationState: "California", status: "Active", address: "456 Market St, San Francisco, CA 94105" } },
+  { test: (n) => /ironwood/i.test(n), result: { legalName: "Ironwood Creative LLC", ein: "37-4928163", entityType: "LLC", formationState: "Illinois", status: "Active", address: "200 N Michigan Ave, Chicago, IL 60601" } },
+  { test: (n) => /cedar/i.test(n), result: { legalName: "Cedar Grove Industries Inc", ein: "34-8273619", entityType: "Corporation", formationState: "Ohio", status: "Active", address: "350 E Broad St, Columbus, OH 43215" } },
+];
+
+type MiddeskState = "idle" | "searching" | "found" | "not-found" | "confirmed" | "skipped";
 
 function formatEin(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 9);
@@ -52,54 +63,155 @@ function formatEin(value: string) {
   return `${digits.slice(0, 2)}-${digits.slice(2)}`;
 }
 
-function IrsDocumentUploadCard({
-  ein,
-  setEin,
-  businessStructure,
-  legalBusinessName,
+function MiddeskEinSection({
+  ein, setEin, businessName, businessStructure, legalBusinessName,
 }: {
-  ein: string;
-  setEin: (v: string) => void;
-  businessStructure: string | null;
-  legalBusinessName: string;
+  ein: string; setEin: (v: string) => void; businessName: string;
+  businessStructure: string | null; legalBusinessName: string;
 }) {
-  const [state, setState] = useState<IrsDocState>(ein ? "confirmed" : "idle");
-  const [extractedEin, setExtractedEin] = useState("");
-  const [extractedEntityType, setExtractedEntityType] = useState("");
-  const [extractedName, setExtractedName] = useState("");
-  const [manualEin, setManualEin] = useState(ein);
-  const [structureMismatch, setStructureMismatch] = useState(false);
+  const [middeskState, setMiddeskState] = useState<MiddeskState>(ein ? "confirmed" : "idle");
+  const [middeskResult, setMiddeskResult] = useState<MiddeskResult | null>(null);
+  const [confirmedFromMiddesk, setConfirmedFromMiddesk] = useState(false);
+  const [manualEin, setManualEin] = useState("");
+  const [uploadAccordionOpen, setUploadAccordionOpen] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevBusinessName = useRef(businessName);
 
-  async function handleUpload() {
-    setState("extracting");
-    await new Promise((r) => setTimeout(r, 2200));
+  useEffect(() => {
+    if (middeskState === "confirmed") return;
+    if (businessName === prevBusinessName.current && middeskState !== "idle") return;
+    prevBusinessName.current = businessName;
 
-    const simEntityType = businessStructure
-      ? (ENTITY_TYPE_MAP[businessStructure] ?? "Other")
-      : "Limited Liability Company";
+    if (businessName.length < 4) {
+      if (middeskState === "searching") setMiddeskState("idle");
+      return;
+    }
 
-    setExtractedEin("82-4721039");
-    setExtractedEntityType(simEntityType);
-    setExtractedName(legalBusinessName || "Acme LLC");
-    setStructureMismatch(false);
-    setState("review");
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(async () => {
+      setMiddeskState("searching");
+      await new Promise((r) => setTimeout(r, 1800));
+      const match = MIDDESK_RECORDS.find((rec) => rec.test(businessName));
+      if (match) {
+        setMiddeskResult(match);
+        setMiddeskState("found");
+      } else {
+        setMiddeskState("not-found");
+      }
+    }, 1200);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [businessName]);
+
+  function handleUseThis() {
+    if (!middeskResult) return;
+    setEin(middeskResult.ein);
+    setConfirmedFromMiddesk(true);
+    setMiddeskState("confirmed");
   }
 
-  function handleConfirm() {
-    setEin(extractedEin);
-    setState("confirmed");
+  function handleChange() {
+    if (middeskResult) {
+      setMiddeskState("found");
+    } else {
+      setMiddeskState("not-found");
+    }
   }
 
   function handleManualSave() {
     if (manualEin.replace(/\D/g, "").length === 9) {
       setEin(manualEin);
-      setState("confirmed");
+      setConfirmedFromMiddesk(false);
+      setMiddeskState("confirmed");
     }
   }
 
-  if (state === "confirmed") {
-    const masked = ein.length >= 4
-      ? `${ein.slice(0, 2)}-XXXXX${ein.slice(-2)}`
+  async function handleFileUpload() {
+    setIsExtracting(true);
+    await new Promise((r) => setTimeout(r, 2200));
+    setIsExtracting(false);
+    setEin("82-4721039");
+    setConfirmedFromMiddesk(false);
+    setMiddeskState("confirmed");
+  }
+
+  if (middeskState === "idle") {
+    return null;
+  }
+
+  if (middeskState === "searching") {
+    return (
+      <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-gray-200 bg-gray-50">
+        <div className="w-4 h-4 border-2 border-[#4ABACD] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+        <span className="text-sm text-hs-text-subtle">Verifying business registration…</span>
+      </div>
+    );
+  }
+
+  if (middeskState === "found" && middeskResult) {
+    const maskedEin = middeskResult.ein.length >= 4
+      ? `XX-XXXXX${middeskResult.ein.slice(-2)}`
+      : middeskResult.ein;
+    return (
+      <div className="flex flex-col gap-3 px-4 py-4 rounded-xl border border-[#4ABACD]/40 bg-[#f0fafb]">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-hs-obsidian">Business found — confirm to auto-fill</span>
+          <span className="text-xs text-[#4ABACD] font-medium">via Middesk</span>
+        </div>
+        <div className="flex flex-col gap-2 bg-white rounded-lg px-4 py-3 border border-gray-100">
+          <div className="flex items-center justify-between py-1 border-b border-gray-50">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Legal name</span>
+            <span className="text-sm text-hs-obsidian">{middeskResult.legalName}</span>
+          </div>
+          <div className="flex items-center justify-between py-1 border-b border-gray-50">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">EIN</span>
+            <span className="text-sm text-hs-obsidian font-mono">{maskedEin}</span>
+          </div>
+          <div className="flex items-center justify-between py-1 border-b border-gray-50">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Entity type</span>
+            <span className="text-sm text-hs-obsidian">{middeskResult.entityType}</span>
+          </div>
+          <div className="flex items-center justify-between py-1 border-b border-gray-50">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Formed in</span>
+            <span className="text-sm text-hs-obsidian">{middeskResult.formationState}</span>
+          </div>
+          <div className="flex items-center justify-between py-1 border-b border-gray-50">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Address</span>
+            <span className="text-sm text-hs-obsidian text-right max-w-[60%]">{middeskResult.address}</span>
+          </div>
+          <div className="flex items-center justify-between py-1">
+            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Status</span>
+            <span className="flex items-center gap-1.5 text-sm text-hs-obsidian">
+              <span className="w-2 h-2 rounded-full bg-[#4ABACD] inline-block" />
+              {middeskResult.status}
+            </span>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => setMiddeskState("skipped")}
+            className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-hs-text-subtle hover:border-gray-300 transition-colors"
+          >
+            That's not right
+          </button>
+          <button
+            onClick={handleUseThis}
+            className="flex-1 py-2 rounded-lg bg-[#141414] text-white text-sm font-semibold hover:bg-[#2d2d2d] transition-colors"
+          >
+            Use this →
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (middeskState === "confirmed") {
+    const maskedEin = ein.length >= 4
+      ? `XX-XXXXX${ein.slice(-2)}`
       : ein;
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#f0fafb] border border-[#4ABACD]/30">
@@ -108,164 +220,81 @@ function IrsDocumentUploadCard({
             <path d="M2.5 7l3 3 6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <div className="flex flex-col gap-0 flex-1">
-          <span className="text-sm font-semibold text-hs-obsidian">EIN verified · {masked}</span>
-          <span className="text-xs text-[#4ABACD]">Business structure confirmed from IRS letter</span>
+        <div className="flex flex-col gap-0.5 flex-1">
+          <span className="text-sm font-semibold text-hs-obsidian">EIN confirmed · {maskedEin}</span>
+          {confirmedFromMiddesk && middeskResult ? (
+            <span className="text-xs text-[#4ABACD]">Verified via Middesk · {middeskResult.formationState} {middeskResult.entityType}</span>
+          ) : (
+            <span className="text-xs text-[#4ABACD]">Entered manually</span>
+          )}
         </div>
         <button
-          onClick={() => setState("idle")}
+          onClick={handleChange}
           className="text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors flex-shrink-0"
         >
-          Replace
-        </button>
-      </div>
-    );
-  }
-
-  if (state === "extracting") {
-    return (
-      <div className="flex flex-col items-center gap-3 px-4 py-6 rounded-xl border border-gray-200 bg-gray-50">
-        <div className="w-7 h-7 border-2 border-[#4ABACD] border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-hs-text-subtle">Reading your IRS letter…</span>
-      </div>
-    );
-  }
-
-  if (state === "review") {
-    return (
-      <div className="flex flex-col gap-4 px-4 py-4 rounded-xl border border-[#4ABACD]/30 bg-[#f0fafb]">
-        <div className="flex items-center gap-2">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#4ABACD] flex-shrink-0">
-            <path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <span className="text-sm font-semibold text-hs-obsidian">Extracted from your IRS letter — review and confirm</span>
-        </div>
-
-        <div className="flex flex-col gap-3 bg-white rounded-lg px-4 py-3 border border-gray-100">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Business name on IRS letter</span>
-            <input
-              type="text"
-              value={extractedName}
-              onChange={(e) => setExtractedName(e.target.value)}
-              className="text-sm text-hs-obsidian bg-transparent border-b border-gray-200 focus:border-[#4ABACD] focus:outline-none py-1"
-            />
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">EIN</span>
-            <input
-              type="text"
-              value={extractedEin}
-              onChange={(e) => setExtractedEin(formatEin(e.target.value))}
-              className="text-sm text-hs-obsidian font-mono bg-transparent border-b border-gray-200 focus:border-[#4ABACD] focus:outline-none py-1"
-            />
-          </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs text-hs-text-subtle font-semibold uppercase tracking-wide">Entity type</span>
-            <span className="text-sm text-hs-obsidian py-1">{extractedEntityType}</span>
-          </div>
-        </div>
-
-        {structureMismatch && (
-          <div className="flex gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-            <span className="flex-shrink-0">⚠</span>
-            <span>The entity type on this document doesn't match your selected business structure. Please verify before confirming.</span>
-          </div>
-        )}
-
-        <div className="flex gap-3">
-          <button
-            onClick={() => setState("idle")}
-            className="flex-1 py-2 rounded-lg border border-gray-200 text-sm text-hs-text-subtle hover:border-gray-300 transition-colors"
-          >
-            Try again
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="flex-1 py-2 rounded-lg bg-[#141414] text-white text-sm font-semibold hover:bg-[#2d2d2d] transition-colors"
-          >
-            Confirm →
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (state === "manual") {
-    return (
-      <div className="flex flex-col gap-4 px-4 py-4 rounded-xl border border-gray-200">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-hs-obsidian">Enter EIN manually</span>
-          <button
-            onClick={() => setState("idle")}
-            className="text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors"
-          >
-            Upload document instead
-          </button>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <input
-            type="text"
-            value={manualEin}
-            onChange={(e) => setManualEin(formatEin(e.target.value))}
-            placeholder="XX-XXXXXXX"
-            autoFocus
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian font-mono placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
-          />
-          <p className="text-xs text-hs-text-subtle">We won't be able to auto-verify your entity type — underwriting may request your IRS letter after submission.</p>
-        </div>
-        <button
-          onClick={handleManualSave}
-          disabled={manualEin.replace(/\D/g, "").length !== 9}
-          className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-colors ${
-            manualEin.replace(/\D/g, "").length === 9
-              ? "bg-[#141414] text-white hover:bg-[#2d2d2d]"
-              : "bg-gray-100 text-gray-400 cursor-not-allowed"
-          }`}
-        >
-          Save EIN
+          Change
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 px-4 py-4 rounded-xl border border-[#4ABACD]/30 bg-[#f0fafb]">
-      <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-white border border-[#4ABACD]/30 flex items-center justify-center flex-shrink-0">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[#4ABACD]">
-            <rect x="3" y="2" width="12" height="14" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
-            <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-          </svg>
+    <div className="flex flex-col gap-4">
+      {middeskState === "not-found" && (
+        <p className="text-xs text-hs-text-subtle">We couldn't find this business in public registries. You can enter your EIN manually below.</p>
+      )}
+      <div className="flex flex-col gap-1.5">
+        <div className="relative flex items-center">
+          <input
+            type="text"
+            value={manualEin}
+            onChange={(e) => setManualEin(formatEin(e.target.value))}
+            placeholder="XX-XXXXXXX"
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-hs-obsidian font-mono placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors text-sm"
+          />
+          {manualEin.replace(/\D/g, "").length === 9 && (
+            <button
+              onClick={handleManualSave}
+              className="absolute right-3 text-xs font-semibold text-[#4ABACD] hover:text-[#0091AE] transition-colors"
+            >
+              Save →
+            </button>
+          )}
         </div>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-sm font-semibold text-hs-obsidian">Upload your IRS EIN Confirmation Letter</span>
-          <span className="text-xs text-hs-text-subtle">CP-575 or Letter 147C — confirms your EIN <span className="font-medium text-hs-obsidian">and</span> legal entity type in one step, reducing underwriting delays</span>
-        </div>
+        <p className="text-xs text-hs-text-subtle">9 digits — found on your SS-4 or any IRS correspondence</p>
       </div>
 
-      <label className="w-full py-2.5 bg-[#4ABACD] text-white rounded-lg text-sm font-semibold hover:bg-[#3aa8bb] transition-colors cursor-pointer text-center block">
-        <input type="file" accept="image/*,.pdf" className="sr-only" onChange={handleUpload} />
-        Upload or take a photo →
-      </label>
-
-      <div className="flex items-center gap-2 text-xs text-hs-text-subtle">
-        <span className="flex-1 h-px bg-gray-200" />
-        <span>Don't have it?</span>
-        <span className="flex-1 h-px bg-gray-200" />
-      </div>
-
-      <div className="flex flex-col gap-1.5 text-xs text-hs-text-subtle">
-        <p>
-          <span className="font-semibold text-hs-obsidian">Get a 147C letter:</span>{" "}
-          Call the IRS at <span className="font-medium text-hs-obsidian">800-829-4933</span> — takes ~10 min, delivered by fax or mail same day
-        </p>
+      <div className="flex flex-col gap-0">
         <button
-          onClick={() => setState("manual")}
-          className="text-left text-[#0091AE] hover:underline"
+          onClick={() => setUploadAccordionOpen((v) => !v)}
+          className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-gray-200 text-left hover:border-gray-300 transition-colors"
         >
-          Enter EIN manually instead (may slow approval) →
+          <span className="text-sm text-hs-obsidian">Upload IRS letter to auto-fill</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[#4ABACD] font-medium px-2 py-0.5 rounded-full bg-[#f0fafb] border border-[#4ABACD]/30">Optional</span>
+            <svg
+              width="16" height="16" viewBox="0 0 16 16" fill="none"
+              className={`text-hs-text-subtle transition-transform ${uploadAccordionOpen ? "rotate-180" : ""}`}
+            >
+              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
         </button>
+        {uploadAccordionOpen && (
+          <div className="px-4 py-4 border border-t-0 border-gray-200 rounded-b-lg">
+            {isExtracting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-[#4ABACD] border-t-transparent rounded-full animate-spin flex-shrink-0" />
+                <span className="text-sm text-hs-text-subtle">Extracting EIN from document…</span>
+              </div>
+            ) : (
+              <label className="w-full py-2.5 bg-[#4ABACD] text-white rounded-lg text-sm font-semibold hover:bg-[#3aa8bb] transition-colors cursor-pointer text-center block">
+                <input type="file" accept="image/*,.pdf" className="sr-only" onChange={handleFileUpload} />
+                Choose file →
+              </label>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -338,12 +367,14 @@ export default function BusinessInformation() {
     selectedIndustry?.restriction === "prohibited" ||
     descriptionRestriction?.status === "prohibited";
 
-  const isValid =
+  const isComplete =
     legalBusinessName.trim().length > 0 &&
     ein.trim().length > 0 &&
     industry.length > 0 &&
     productsOrServices.trim().length >= 10 &&
     !isProhibited;
+
+  const hasAny = legalBusinessName.trim().length > 0 || ein.trim().length > 0 || industry.length > 0 || productsOrServices.trim().length > 0;
 
   const handleIndustrySelect = (value: string) => {
     setIndustry(value);
@@ -453,19 +484,20 @@ export default function BusinessInformation() {
             />
           </div>
 
-          {/* EIN + business structure verification */}
+          {/* EIN */}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-sm font-semibold text-hs-obsidian">
-                EIN & business structure <span className="text-red-500">*</span>
+                EIN (Employer Identification Number) <span className="text-red-500">*</span>
               </label>
               <p className="text-xs text-hs-text-subtle">
                 Required for tax reporting (1099-K) — must match your IRS records exactly
               </p>
             </div>
-            <IrsDocumentUploadCard
+            <MiddeskEinSection
               ein={ein}
               setEin={setEin}
+              businessName={legalBusinessName}
               businessStructure={businessStructure}
               legalBusinessName={legalBusinessName}
             />
@@ -690,19 +722,21 @@ export default function BusinessInformation() {
           <div className="flex flex-col gap-3 pt-2 pb-10">
             <button
               onClick={() => navigate("/dashboard")}
-              disabled={!isValid}
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
-                isValid
+                isComplete
                   ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md"
-                  : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : hasAny
+                  ? "bg-[#141414] text-white hover:bg-[#2d2d2d] opacity-80"
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200"
               }`}
             >
-              Save & return to application
+              {isComplete ? "Save & return to application" : hasAny ? "Save progress" : "Return to application"}
             </button>
             {isProhibited && (
-              <p className="text-xs text-red-600 text-center">
-                Resolve the eligibility issue above before continuing.
-              </p>
+              <p className="text-xs text-red-600 text-center">Resolve the eligibility issue above before submitting.</p>
+            )}
+            {hasAny && !isComplete && !isProhibited && (
+              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
             )}
           </div>
 

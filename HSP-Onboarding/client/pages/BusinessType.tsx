@@ -66,6 +66,14 @@ const STRUCTURES: {
   },
 ];
 
+function inferStructure(name: string): BusinessStructureOption | null {
+  const n = name.toLowerCase();
+  if (/\b(inc\.?|incorporated|corp\.?|corporation)\b/.test(n)) return "private-corporation";
+  if (/\b(l\.?l\.?p\.?|limited partnership|& partners|and partners)\b/.test(n)) return "private-partnership";
+  if (/\b(l\.?l\.?c\.?|limited liability)\b/.test(n)) return "multi-member-llc";
+  return null;
+}
+
 export default function BusinessType() {
   const navigate = useNavigate();
   const {
@@ -74,6 +82,7 @@ export default function BusinessType() {
     businessStructure,
     setBusinessStructure,
     setHasConfirmedBusinessType,
+    legalBusinessName,
   } = useOnboarding();
 
   const [pendingType, setPendingType] = useState(selectedBusinessType);
@@ -151,7 +160,9 @@ export default function BusinessType() {
                           className={`group flex items-center gap-4 w-full px-5 py-4 rounded-lg border-2 text-left transition-all duration-150
                             ${businessStructure === s.value
                               ? "border-[#4ABACD] bg-[#f0fafb]"
-                              : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                              : inferStructure(legalBusinessName) === s.value && businessStructure !== s.value
+                                ? "border-gray-200 border-l-[#4ABACD]/40 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                                : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
                             }`}
                         >
                           <div className="flex flex-col gap-1 flex-1">
@@ -160,6 +171,11 @@ export default function BusinessType() {
                             {s.taxNote && (
                               <span className={`text-xs mt-0.5 ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
                                 {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                              </span>
+                            )}
+                            {inferStructure(legalBusinessName) === s.value && legalBusinessName.trim().length > 0 && (
+                              <span className="text-xs text-[#4ABACD] font-medium mt-0.5">
+                                ✦ Matches your business name
                               </span>
                             )}
                           </div>

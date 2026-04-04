@@ -502,19 +502,18 @@ export default function BusinessFinancials() {
           <div className="flex flex-col gap-3 pb-10">
             <button
               onClick={() => navigate("/dashboard")}
-              disabled={!isValid && !hasAny}
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
                 isValid
                   ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md"
                   : hasAny
-                    ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md opacity-80"
-                    : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  ? "bg-[#141414] text-white hover:bg-[#2d2d2d] opacity-80"
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200"
               }`}
             >
-              {isValid ? "Save & return to application" : hasAny ? "Save progress & return" : "Save & return to application"}
+              {isValid ? "Save & return to application" : hasAny ? "Save progress" : "Return to application"}
             </button>
             {hasAny && !isValid && (
-              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — finish the remaining fields to complete this section</p>
+              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
             )}
           </div>
 
