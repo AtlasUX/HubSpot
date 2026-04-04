@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
+import SmartFill from "@/components/SmartFill";
 
 const COUNTRY_NAMES: Record<string, { label: string; flag: string }> = {
   US: { label: "United States", flag: "🇺🇸" },
@@ -179,6 +180,9 @@ export default function ApplicationDashboard() {
               />
             </div>
           </div>
+
+          {/* Smart fill */}
+          <SmartFill />
 
           {/* Section cards */}
           <div className="flex flex-col gap-3">
