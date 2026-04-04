@@ -100,7 +100,6 @@ export default function BusinessType() {
   const handleStructureSelect = (value: BusinessStructureOption) => {
     setBusinessStructure(value);
     setHasConfirmedBusinessType(true);
-    navigate("/dashboard");
   };
 
   return (
@@ -201,15 +200,21 @@ export default function BusinessType() {
             <button
               onClick={() => navigate("/dashboard")}
               className={`w-full py-4 rounded-xl font-semibold text-base transition-all duration-200 ${
-                pendingType
-                  ? "bg-[#4ABACD] text-white hover:bg-[#0091AE] hover:shadow-md"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                (pendingType && pendingType !== "company") || (pendingType === "company" && businessStructure)
+                  ? "bg-[#141414] text-white hover:bg-[#2d2d2d] hover:shadow-md"
+                  : pendingType
+                    ? "bg-[#4ABACD] text-white hover:bg-[#0091AE] hover:shadow-md"
+                    : "bg-gray-100 text-gray-500 hover:bg-gray-200"
               }`}
             >
-              {pendingType ? "Save progress" : "Return to application"}
+              {(pendingType && pendingType !== "company") || (pendingType === "company" && businessStructure)
+                ? "Save & return to application"
+                : pendingType
+                  ? "Save progress"
+                  : "Return to application"}
             </button>
-            {pendingType && !businessStructure && (
-              <p className="text-xs text-hs-text-subtle text-center">Your progress is saved — you can return to complete this section anytime.</p>
+            {pendingType === "company" && !businessStructure && (
+              <p className="text-xs text-hs-text-subtle text-center">Select a structure above to complete this section.</p>
             )}
           </div>
 
