@@ -197,7 +197,19 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
   const [repSsnLast4, setRepSsnLast4] = useState("");
   const [repIsOwner, setRepIsOwner] = useState(false);
   const [owners, setOwners] = useState<Owner[]>([]);
-  const [invites, setInvites] = useState<InviteRecord[]>([]);
+  const [invites, setInvites] = useState<InviteRecord[]>(() => {
+    try {
+      const stored = localStorage.getItem("hs-payments-invites");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  function persistInvites(updated: InviteRecord[]) {
+    setInvites(updated);
+    try { localStorage.setItem("hs-payments-invites", JSON.stringify(updated)); } catch {}
+  }
 
   const addInvite = (email: string, sections: string[]) => {
     const record: InviteRecord = {
@@ -207,11 +219,11 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
       sentAt: new Date().toISOString(),
       status: "active",
     };
-    setInvites((prev) => [record, ...prev]);
+    persistInvites([record, ...invites]);
   };
 
   const revokeInvite = (id: string) => {
-    setInvites((prev) => prev.filter((inv) => inv.id !== id));
+    persistInvites(invites.filter((inv) => inv.id !== id));
   };
 
   const resetOnboarding = () => {
