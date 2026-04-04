@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export const ALL_SECTIONS = [
   { id: "structure", title: "Business structure" },
@@ -9,25 +9,44 @@ export const ALL_SECTIONS = [
   { id: "ownership", title: "Ownership" },
 ];
 
+function deriveSubject(sections: string[]): string {
+  if (sections.length === 0) return "Help requested — HubSpot Payments application";
+  if (sections.length === 1) {
+    const title = ALL_SECTIONS.find((s) => s.id === sections[0])?.title ?? "";
+    return `Help requested: ${title} — HubSpot Payments`;
+  }
+  if (sections.length === 2) {
+    const titles = sections.map((id) => ALL_SECTIONS.find((s) => s.id === id)?.title ?? "");
+    return `Help requested: ${titles[0]} & ${titles[1]} — HubSpot Payments`;
+  }
+  return `Help requested: ${sections.length} sections — HubSpot Payments`;
+}
+
 export function InviteModal({ sectionTitle, onClose }: { sectionTitle: string; onClose: () => void }) {
   const initialId = ALL_SECTIONS.find((s) => s.title === sectionTitle)?.id ?? ALL_SECTIONS[0].id;
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [selectedSections, setSelectedSections] = useState<string[]>([initialId]);
   const [sendFrom, setSendFrom] = useState<"hubspot" | "me">("hubspot");
+  const [subject, setSubject] = useState(() => deriveSubject([initialId]));
+  const subjectCustomized = useRef(false);
   const [message, setMessage] = useState(
     `Hi,\n\nI'm setting up HubSpot Payments for our business and need your help completing the "${sectionTitle}" section of our application.\n\nPlease follow the secure link below to fill in the required information. It should only take a few minutes.\n\nThank you!`
   );
 
   function toggleSection(id: string) {
-    setSelectedSections((prev) =>
-      prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]
-    );
+    setSelectedSections((prev) => {
+      const next = prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id];
+      if (!subjectCustomized.current) {
+        setSubject(deriveSubject(next));
+      }
+      return next;
+    });
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="px-6 pt-6 pb-4 border-b border-gray-100">
           <h2 className="text-base font-semibold text-hs-obsidian">Invite someone to help</h2>
           <p className="text-sm text-hs-text-subtle mt-0.5">They'll get a secure link to fill out only the sections you choose.</p>
@@ -56,6 +75,19 @@ export function InviteModal({ sectionTitle, onClose }: { sectionTitle: string; o
                 placeholder="colleague@example.com"
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors"
                 autoFocus
+              />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-semibold text-hs-obsidian">Subject</label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => {
+                  subjectCustomized.current = true;
+                  setSubject(e.target.value);
+                }}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-hs-obsidian placeholder-gray-300 focus:outline-none focus:border-[#4ABACD] focus:ring-1 focus:ring-[#4ABACD] transition-colors"
               />
             </div>
 
