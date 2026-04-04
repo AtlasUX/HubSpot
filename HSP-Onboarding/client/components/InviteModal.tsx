@@ -37,15 +37,7 @@ function deriveMessage(sections: string[]): string {
   return `Hi,\n\nI'm setting up HubSpot Payments for our business and need your help completing ${sectionList} of our application.\n\nPlease follow the secure link below — it will only show you the sections you're responsible for. It should only take a few minutes.\n\nThank you!`;
 }
 
-export function InviteModal({
-  sectionTitle,
-  onClose,
-  onSend,
-}: {
-  sectionTitle: string;
-  onClose: () => void;
-  onSend?: (email: string, sections: string[]) => void;
-}) {
+export function InviteModal({ sectionTitle, onClose }: { sectionTitle: string; onClose: () => void }) {
   const initialId = ALL_SECTIONS.find((s) => s.title === sectionTitle)?.id ?? ALL_SECTIONS[0].id;
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
@@ -67,12 +59,6 @@ export function InviteModal({
       }
       return next;
     });
-  }
-
-  function handleSend() {
-    if (!email.trim() || selectedSections.length === 0) return;
-    onSend?.(email.trim(), selectedSections);
-    setSent(true);
   }
 
   return (
@@ -177,7 +163,7 @@ export function InviteModal({
                 Cancel
               </button>
               <button
-                onClick={handleSend}
+                onClick={() => (email.trim() && selectedSections.length > 0) && setSent(true)}
                 disabled={!email.trim() || selectedSections.length === 0}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
                   email.trim() && selectedSections.length > 0

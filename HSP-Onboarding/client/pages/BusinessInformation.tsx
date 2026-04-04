@@ -448,75 +448,62 @@ export default function BusinessInformation() {
           {/* Business type */}
           <div className="flex flex-col gap-3">
             <label className="text-sm font-semibold text-hs-obsidian">Business type <span className="text-red-500">*</span></label>
-            <div className="flex flex-col gap-2">
-              {BUSINESS_TYPES.map(({ value, label, sub, emoji }) => (
-                <div key={value}>
-                  <button
-                    onClick={() => {
-                      setSelectedBusinessType(value);
-                      setHasConfirmedBusinessType(value !== "company");
-                      if (value !== "company") setBusinessStructure(null);
-                    }}
-                    className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150 active:scale-[0.99]
-                      ${selectedBusinessType === value
-                        ? "border-[#4ABACD] bg-[#f0fafb]"
-                        : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
-                      }`}
-                  >
-                    <span className="text-2xl w-8 text-center flex-shrink-0">{emoji}</span>
-                    <div className="flex flex-col gap-0.5 flex-1">
-                      <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
-                      <span className="text-xs text-hs-text-subtle">{sub}</span>
-                    </div>
-                    {selectedBusinessType === value && (
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[#4ABACD] flex-shrink-0">
-                        <circle cx="9" cy="9" r="8" stroke="currentColor" strokeWidth="1.5" />
-                        <path d="M5.5 9l2.5 2.5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    )}
-                  </button>
 
-                  {/* Structure options expand directly under "Registered business" */}
-                  {value === "company" && selectedBusinessType === "company" && (
-                    <div className="mt-1 ml-5 pl-4 border-l-2 border-[#4ABACD]/30 flex flex-col gap-1.5 pt-2 pb-1">
-                      <p className="text-xs font-medium text-hs-text-subtle uppercase tracking-wide mb-1">What's your structure?</p>
-                      {STRUCTURES.map((s) => (
-                        <button
-                          key={s.value}
-                          onClick={() => { setBusinessStructure(s.value); setHasConfirmedBusinessType(true); }}
-                          className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg border-2 text-left transition-all duration-150
-                            ${businessStructure === s.value
-                              ? "border-[#4ABACD] bg-[#f0fafb]"
-                              : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
-                            }`}
-                        >
-                          <div className="flex flex-col gap-0.5 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-semibold text-hs-obsidian">{s.label}</span>
-                              {inferStructure(legalBusinessName) === s.value && legalBusinessName.trim().length > 0 && (
-                                <span className="text-xs text-[#4ABACD] font-medium">✦ Matches name</span>
-                              )}
-                            </div>
-                            <span className="text-xs text-hs-text-subtle">{s.sub}</span>
-                            {s.taxNote && (
-                              <span className={`text-xs mt-0.5 ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
-                                {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
-                              </span>
-                            )}
-                          </div>
-                          {businessStructure === s.value && (
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#4ABACD] flex-shrink-0">
-                              <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-                              <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+            {/* 3-column compact type selector */}
+            <div className="grid grid-cols-3 gap-2">
+              {BUSINESS_TYPES.map(({ value, label, emoji }) => (
+                <button
+                  key={value}
+                  onClick={() => {
+                    setSelectedBusinessType(value);
+                    setHasConfirmedBusinessType(value !== "company");
+                    if (value !== "company") setBusinessStructure(null);
+                  }}
+                  className={`flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl border-2 text-center transition-all duration-150 active:scale-[0.98]
+                    ${selectedBusinessType === value
+                      ? "border-[#4ABACD] bg-[#f0fafb]"
+                      : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                    }`}
+                >
+                  <span className="text-xl">{emoji}</span>
+                  <span className={`text-xs font-semibold leading-tight ${selectedBusinessType === value ? "text-[#0091AE]" : "text-hs-obsidian"}`}>{label}</span>
+                </button>
               ))}
             </div>
+
+            {/* Structure options — only shown when Registered business is selected */}
+            {selectedBusinessType === "company" && (
+              <div className="flex flex-col gap-1.5">
+                <p className="text-xs font-medium text-hs-text-subtle uppercase tracking-wide">What's your structure?</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {STRUCTURES.map((s) => {
+                    const isInferred = inferStructure(legalBusinessName) === s.value && legalBusinessName.trim().length > 0;
+                    const isSelected = businessStructure === s.value;
+                    return (
+                      <button
+                        key={s.value}
+                        onClick={() => { setBusinessStructure(s.value); setHasConfirmedBusinessType(true); }}
+                        className={`flex flex-col gap-1 px-3 py-2.5 rounded-lg border-2 text-left transition-all duration-150
+                          ${isSelected
+                            ? "border-[#4ABACD] bg-[#f0fafb]"
+                            : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                          }`}
+                      >
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs font-semibold text-hs-obsidian">{s.label}</span>
+                          {isInferred && <span className="text-[10px] text-[#4ABACD] font-medium">✦ Matches</span>}
+                        </div>
+                        {s.taxNote && (
+                          <span className={`text-[10px] leading-tight ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                            {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Legal business name + inline Middesk verification */}
