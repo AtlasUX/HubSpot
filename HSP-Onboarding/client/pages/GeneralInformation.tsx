@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { OnboardingHeader, Toast } from "design-system/components";
 import { useOnboarding } from "@/contexts/OnboardingContext";
-import PhaseProgress from "@/components/PhaseProgress";
 
 const SUPPORTED_COUNTRIES = [
   { value: "US", label: "United States", flag: "🇺🇸" },
@@ -40,7 +39,6 @@ export default function GeneralInformation() {
         />
       )}
       <OnboardingHeader onExit={() => console.log("Exit clicked")} />
-      <PhaseProgress />
 
       <div className="flex-1 flex flex-col items-center px-6 overflow-y-auto">
         <div className="flex flex-col items-center gap-10 w-full max-w-lg py-10 my-auto">
