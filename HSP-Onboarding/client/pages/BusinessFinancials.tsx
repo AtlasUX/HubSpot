@@ -51,23 +51,12 @@ function ChipGroup({
   );
 }
 
-type PlaidState = "idle" | "picking" | "connecting" | "done";
-
-const BANKS = [
-  { id: "chase", name: "Chase", color: "#117ACA" },
-  { id: "bofa", name: "Bank of America", color: "#E11B22" },
-  { id: "wells", name: "Wells Fargo", color: "#D71E28" },
-  { id: "citi", name: "Citibank", color: "#003B70" },
-  { id: "usbank", name: "U.S. Bank", color: "#0C2C8A" },
-  { id: "pnc", name: "PNC Bank", color: "#F58220" },
-];
+type StripeConnectState = "idle" | "connecting" | "done";
 
 function BankConnectionCard({ onConnected }: { onConnected: () => void }) {
-  const [state, setState] = useState<PlaidState>("idle");
-  const [selectedBank, setSelectedBank] = useState<string | null>(null);
+  const [state, setState] = useState<StripeConnectState>("idle");
 
-  async function handleBankSelect(bankId: string) {
-    setSelectedBank(bankId);
+  async function handleConnect() {
     setState("connecting");
     await new Promise((r) => setTimeout(r, 2000));
     setState("done");
@@ -75,7 +64,6 @@ function BankConnectionCard({ onConnected }: { onConnected: () => void }) {
   }
 
   if (state === "done") {
-    const bank = BANKS.find((b) => b.id === selectedBank);
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#f0fafb] border border-[#4ABACD]/30">
         <div className="w-8 h-8 rounded-full bg-[#4ABACD] flex items-center justify-center flex-shrink-0">
@@ -83,10 +71,11 @@ function BankConnectionCard({ onConnected }: { onConnected: () => void }) {
             <path d="M2.5 7l3 3 6-6" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
-        <div className="flex flex-col gap-0">
-          <span className="text-sm font-semibold text-hs-obsidian">{bank?.name} connected</span>
+        <div className="flex flex-col gap-0 flex-1">
+          <span className="text-sm font-semibold text-hs-obsidian">Bank account connected</span>
           <span className="text-xs text-[#4ABACD]">Increases your chance of auto-approval</span>
         </div>
+        <button onClick={() => setState("idle")} className="text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors flex-shrink-0">Change</button>
       </div>
     );
   }
@@ -94,35 +83,8 @@ function BankConnectionCard({ onConnected }: { onConnected: () => void }) {
   if (state === "connecting") {
     return (
       <div className="flex flex-col items-center gap-3 px-4 py-5 rounded-xl border border-gray-200 bg-gray-50">
-        <div className="w-7 h-7 border-2 border-[#4ABACD] border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-hs-text-subtle">Connecting securely…</span>
-      </div>
-    );
-  }
-
-  if (state === "picking") {
-    return (
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 overflow-hidden">
-        <div className="px-4 pt-4">
-          <p className="text-sm font-semibold text-hs-obsidian">Select your bank</p>
-        </div>
-        <div className="grid grid-cols-3 gap-px bg-gray-100">
-          {BANKS.map((bank) => (
-            <button
-              key={bank.id}
-              onClick={() => handleBankSelect(bank.id)}
-              className="flex flex-col items-center justify-center gap-1.5 px-3 py-3 bg-white hover:bg-[#f0fafb] transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: bank.color }}>
-                {bank.name[0]}
-              </div>
-              <span className="text-xs text-hs-text-subtle text-center leading-tight">{bank.name}</span>
-            </button>
-          ))}
-        </div>
-        <div className="px-4 pb-3">
-          <button onClick={() => setState("idle")} className="text-xs text-hs-text-subtle hover:text-[#0091AE] transition-colors">Cancel</button>
-        </div>
+        <div className="w-7 h-7 border-2 border-[#635BFF] border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-hs-text-subtle">Connecting via Stripe…</span>
       </div>
     );
   }
@@ -142,12 +104,12 @@ function BankConnectionCard({ onConnected }: { onConnected: () => void }) {
         </div>
       </div>
       <button
-        onClick={() => setState("picking")}
-        className="w-full py-2.5 bg-[#4ABACD] text-white rounded-lg text-sm font-semibold hover:bg-[#3aa8bb] transition-colors"
+        onClick={handleConnect}
+        className="w-full py-2.5 bg-[#635BFF] text-white rounded-lg text-sm font-semibold hover:bg-[#5249e3] transition-colors"
       >
-        Connect bank account →
+        Connect with Stripe →
       </button>
-      <p className="text-xs text-hs-text-subtle text-center">Powered by Plaid · Read-only access · Disconnect anytime</p>
+      <p className="text-xs text-hs-text-subtle text-center">Secured by Stripe · Read-only access · Disconnect anytime</p>
     </div>
   );
 }
@@ -411,7 +373,7 @@ export default function BusinessFinancials() {
             <circle cx="6" cy="5" r="3" stroke="currentColor" strokeWidth="1.4" />
             <path d="M1 13c0-2.761 2.239-5 5-5M11 10v4M13 12h-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
           </svg>
-          Invite someone
+          Invite collaborator
         </button>
       </div>
 
