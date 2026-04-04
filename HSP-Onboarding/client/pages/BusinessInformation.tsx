@@ -1,8 +1,30 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingHeader } from "design-system/components";
-import { useOnboarding } from "@/contexts/OnboardingContext";
+import { useOnboarding, type BusinessStructureOption } from "@/contexts/OnboardingContext";
 import { INDUSTRIES, getDescriptionRestriction, type Industry } from "@/data/industries";
+
+const BUSINESS_TYPES = [
+  { value: "individual" as const, label: "Just me", sub: "Sole proprietor, freelancer, or contractor", emoji: "👤" },
+  { value: "company" as const, label: "Registered business", sub: "LLC, corporation, or partnership", emoji: "🏢" },
+  { value: "nonprofit" as const, label: "Nonprofit", sub: "Registered charity or foundation", emoji: "💙" },
+];
+
+const STRUCTURES: { value: BusinessStructureOption; label: string; sub: string; taxNote?: string; taxNoteWarning?: boolean }[] = [
+  { value: "sole-proprietorship", label: "Sole proprietorship", sub: "Unregistered individual business", taxNote: "1099K reports under your personal SSN", taxNoteWarning: true },
+  { value: "single-member-llc", label: "Single-member LLC", sub: "One owner, registered as an LLC", taxNote: "1099K reports under your personal SSN", taxNoteWarning: true },
+  { value: "multi-member-llc", label: "Multi-member LLC", sub: "Multiple owners, registered as an LLC", taxNote: "Tax reporting uses your business EIN" },
+  { value: "private-partnership", label: "Private partnership", sub: "Two or more partners sharing ownership", taxNote: "Tax reporting uses your business EIN" },
+  { value: "private-corporation", label: "Private corporation", sub: "C-Corp, S-Corp, or private corporation", taxNote: "Tax reporting uses your business EIN" },
+];
+
+function inferStructure(name: string): BusinessStructureOption | null {
+  const n = name.toLowerCase();
+  if (/\b(inc\.?|incorporated|corp\.?|corporation)\b/.test(n)) return "private-corporation";
+  if (/\b(l\.?l\.?p\.?|limited partnership|& partners|and partners)\b/.test(n)) return "private-partnership";
+  if (/\b(l\.?l\.?c\.?|limited liability)\b/.test(n)) return "multi-member-llc";
+  return null;
+}
 
 interface BusinessRegistryResult {
   name: string;
@@ -303,12 +325,14 @@ function MiddeskEinSection({
 export default function BusinessInformation() {
   const navigate = useNavigate();
   const {
+    selectedBusinessType, setSelectedBusinessType,
+    businessStructure, setBusinessStructure,
+    setHasConfirmedBusinessType,
     legalBusinessName, setLegalBusinessName,
     doingBusinessAs, setDoingBusinessAs,
     industry, setIndustry,
     productsOrServices, setProductsOrServices,
     ein, setEin,
-    businessStructure,
   } = useOnboarding();
 
   const [search, setSearch] = useState("");
@@ -367,14 +391,17 @@ export default function BusinessInformation() {
     selectedIndustry?.restriction === "prohibited" ||
     descriptionRestriction?.status === "prohibited";
 
+  const typeComplete = selectedBusinessType !== null && (selectedBusinessType !== "company" || businessStructure !== null);
+
   const isComplete =
+    typeComplete &&
     legalBusinessName.trim().length > 0 &&
     ein.trim().length > 0 &&
     industry.length > 0 &&
     productsOrServices.trim().length >= 10 &&
     !isProhibited;
 
-  const hasAny = legalBusinessName.trim().length > 0 || ein.trim().length > 0 || industry.length > 0 || productsOrServices.trim().length > 0;
+  const hasAny = selectedBusinessType !== null || legalBusinessName.trim().length > 0 || ein.trim().length > 0 || industry.length > 0 || productsOrServices.trim().length > 0;
 
   const handleIndustrySelect = (value: string) => {
     setIndustry(value);
@@ -403,6 +430,81 @@ export default function BusinessInformation() {
             <p className="text-base text-hs-text-subtle">
               We use this to verify your business and ensure compliance with payment network rules.
             </p>
+          </div>
+
+          {/* Business type */}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-hs-obsidian">Business type <span className="text-red-500">*</span></label>
+            </div>
+            <div className="flex flex-col gap-2">
+              {BUSINESS_TYPES.map(({ value, label, sub, emoji }) => (
+                <button
+                  key={value}
+                  onClick={() => {
+                    setSelectedBusinessType(value);
+                    setHasConfirmedBusinessType(value !== "company");
+                    if (value !== "company") setBusinessStructure(null);
+                  }}
+                  className={`flex items-center gap-4 w-full px-4 py-3.5 rounded-xl border-2 text-left transition-all duration-150 active:scale-[0.99]
+                    ${selectedBusinessType === value
+                      ? "border-[#4ABACD] bg-[#f0fafb]"
+                      : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                    }`}
+                >
+                  <span className="text-2xl w-8 text-center flex-shrink-0">{emoji}</span>
+                  <div className="flex flex-col gap-0.5 flex-1">
+                    <span className="text-sm font-semibold text-hs-obsidian">{label}</span>
+                    <span className="text-xs text-hs-text-subtle">{sub}</span>
+                  </div>
+                  {selectedBusinessType === value && (
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-[#4ABACD] flex-shrink-0">
+                      <circle cx="9" cy="9" r="8" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M5.5 9l2.5 2.5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Structure sub-selection when "Registered business" is selected */}
+            {selectedBusinessType === "company" && (
+              <div className="flex flex-col gap-2 ml-4 pl-4 border-l-2 border-[#4ABACD]/20">
+                <p className="text-xs font-medium text-hs-text-subtle uppercase tracking-wide">What's your structure?</p>
+                {STRUCTURES.map((s) => (
+                  <button
+                    key={s.value}
+                    onClick={() => { setBusinessStructure(s.value); setHasConfirmedBusinessType(true); }}
+                    className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg border-2 text-left transition-all duration-150
+                      ${businessStructure === s.value
+                        ? "border-[#4ABACD] bg-[#f0fafb]"
+                        : "border-gray-200 bg-white hover:border-[#4ABACD] hover:bg-[#f0fafb]"
+                      }`}
+                  >
+                    <div className="flex flex-col gap-0.5 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-hs-obsidian">{s.label}</span>
+                        {inferStructure(legalBusinessName) === s.value && legalBusinessName.trim().length > 0 && (
+                          <span className="text-xs text-[#4ABACD] font-medium">✦ Matches name</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-hs-text-subtle">{s.sub}</span>
+                      {s.taxNote && (
+                        <span className={`text-xs mt-0.5 ${s.taxNoteWarning ? "text-amber-600" : "text-[#4ABACD]"}`}>
+                          {s.taxNoteWarning ? "⚠ " : "✓ "}{s.taxNote}
+                        </span>
+                      )}
+                    </div>
+                    {businessStructure === s.value && (
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-[#4ABACD] flex-shrink-0">
+                        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
+                        <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Legal business name + inline Middesk verification */}
