@@ -327,7 +327,7 @@ function PlaidSlot() {
           </svg>
         </div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-hs-obsidian">Bank account</p>
+          <p className="text-sm font-semibold text-hs-obsidian">Bank account for payouts</p>
           <p className="text-xs text-hs-text-subtle">Connect via Plaid · Read-only</p>
         </div>
         <div className="flex flex-wrap gap-1 justify-center">
